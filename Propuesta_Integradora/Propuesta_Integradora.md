@@ -8,7 +8,7 @@ Este proyecto va dirigido hacia las personas sordomudas, especificamente a niño
 
 ## ¿Cuáles son sus innovaciones?
 - El sitio web enseñara lenguaje de señas de manera interactiva con juegos para que el estudiante que en este caso es el niño, aprenda de manera facil. 
-- El juego será tipo Duolingo que incluya **pictogramas**, **alfabeto latino** y se enseñara la **Lengua de Señas Mexicanas**.
+- El juego incluirá **pictogramas**, **alfabeto latino** y se enseñara la **Lengua de Señas Mexicanas**.
 - El usuario podrá ir aprendiendo a su ritmo a manera que el aprendizaje sea claro y verdaderamente se tenga una comprensión. 
 - Despues de cada lección se plantea hacer un pequeño apartado donde se pueda ver tus conocimientos con un pequeño examen.
 - Se buscará hacer que el usuario tenga el material suficiente como **videos** o incluso **correcciones** de su lenguaje para mejorar su desempeño. 
