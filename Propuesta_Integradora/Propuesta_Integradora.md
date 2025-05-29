@@ -1,4 +1,4 @@
-# Proyecto **Adiós Al Silencio**
+### Adiós Al Silencio
 
 ## ¿Cuál es el objetivo de este proyecto?
 - Ayudar a los niños de 6-12 años a qué con esta página web puedan aprender o reforzar el lenguaje de señas mexicano
@@ -17,3 +17,5 @@ Este proyecto va dirigido hacia las personas sordomudas, especificamente a niño
 ## Conocimiento de Campo:
 - Aunque claro en el mercado puedes encontrar diferentes apps que intentan enseñar este tipo de lenguas a lo largo de nuestra investigación la mayoría es teórico o algo tedioso. Son confusos para pequeños y normalmente no permiten un seguimiento, buscamos que esté sea más cercano al usuario y que el usuario pueda tener un verdadero acercamiento con la lengua.
 
+### URL para poder saber más sobre la estructura de HTML:
+https://www.ionos.mx/digitalguide/paginas-web/desarrollo-web/html-tags/
