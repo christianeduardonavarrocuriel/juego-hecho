@@ -27,7 +27,7 @@
 
         /* Contenedor principal con imagen de fondo */
         .unified-background {
-            background: url('../static/images/fondo.png?v=20250107') center center no-repeat;
+            background: url('../static/images/images_index/fondo.png?v=20250107-2') center center no-repeat;
             background-size: cover;
             position: relative;
         }
@@ -186,7 +186,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('../static/images/azul rey.jpg?v=20250107') center center no-repeat;
+            background: url('../static/images/images_index/azul rey.jpg?v=20250107') center center no-repeat;
             background-size: cover;
             z-index: 1;
         }
@@ -228,8 +228,8 @@
 
         /* Sección "Días de Racha" */
         .footer-section {
-            background: linear-gradient(135deg, #2F4F4F 0%, #000000 100%);
-            padding: 60px 40px 80px 40px;
+            background: #000000;
+            padding: 80px 40px 80px 40px;
             text-align: center;
             color: white;
             position: relative;
@@ -243,7 +243,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('../static/images/fuego.jpg?v=20250107') center center no-repeat;
+            background: url('../static/images/images_index/fuego.jpg?v=20250107') center center no-repeat;
             background-size: cover;
             opacity: 0.9;
             z-index: 1;
@@ -337,6 +337,52 @@
                                0 0 50px rgba(255, 69, 0, 0.9); }
         }
 
+        /* Animaciones de scroll */
+        .scroll-animation {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease-out;
+        }
+
+        .scroll-animation.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .scroll-animation.slide-left {
+            transform: translateX(-50px);
+        }
+
+        .scroll-animation.slide-left.animate {
+            transform: translateX(0);
+        }
+
+        .scroll-animation.slide-right {
+            transform: translateX(50px);
+        }
+
+        .scroll-animation.slide-right.animate {
+            transform: translateX(0);
+        }
+
+        .scroll-animation.scale-up {
+            transform: scale(0.8);
+        }
+
+        .scroll-animation.scale-up.animate {
+            transform: scale(1);
+        }
+
+        .scroll-animation.rotate-fade {
+            opacity: 0;
+            transform: rotateY(45deg) translateY(30px);
+        }
+
+        .scroll-animation.rotate-fade.animate {
+            opacity: 1;
+            transform: rotateY(0deg) translateY(0);
+        }
+
         /* Estilos para pantallas pequeñas (celulares) */
         @media (max-width: 768px) {
             .welcome-title, .mission-title, .ai-title {
@@ -406,26 +452,26 @@
         <div class="header">
             <div class="logo">
                 <div class="logo-icon">
-                    <img src="../static/images/logo.png?v=20250107" alt="Logo">
+                    <img src="../static/images/images_index/logo.png?v=20250107" alt="Logo">
                 </div>
                 <span>Adios al Silencio!</span>
             </div>
             <div class="nav-buttons">
                 <button class="nav-btn">JUGAR</button>
                 <button class="nav-btn">CREAR CUENTA</button>
-                <button class="nav-btn">REGISTRARSE</button>
+                <button class="nav-btn">¿QUIÉNES SOMOS?</button>
             </div>
         </div>
 
         <!-- Personaje principal -->
-        <div class="hero-section">
+        <div class="hero-section scroll-animation scale-up">
             <div class="character">
-                <img src="../static/images/personaje principal.png?v=20250107" alt="Personaje Principal">
+                <img src="../static/images/images_index/personaje principal.png?v=20250107" alt="Personaje Principal">
             </div>
         </div>
 
         <!-- Mensaje de bienvenida -->
-        <div class="welcome-section">
+        <div class="welcome-section scroll-animation">
             <h1 class="welcome-title">Bienvenido a<br>Adios Al Silencio!</h1>
             <p class="welcome-text">
                 Conoce la Lengua de Señas Mexicana a través de nuestro gran 
@@ -435,7 +481,7 @@
     </div>
 
     <!-- Sección Nuestra Misión -->
-    <div class="mission-section">
+    <div class="mission-section scroll-animation slide-left">
         <h2 class="mission-title">Nuestra Misión:</h2>
         <p class="mission-text">
             Construir inclusión desde la infancia para que todos 
@@ -450,12 +496,12 @@
         
         <!-- Rana decorativa -->
         <div class="dragon-character">
-            <img src="../static/images/rana.png?v=20250107" alt="Rana">
+            <img src="../static/images/images_index/rana.png?v=20250107" alt="Rana">
         </div>
     </div>
 
     <!-- Sección IA Generativa -->
-    <div class="ai-section">
+    <div class="ai-section scroll-animation slide-right">
         <h2 class="ai-title">IA Generativa</h2>
         <p class="ai-text">
             Gracias a la IA implementada, podrás 
@@ -469,17 +515,17 @@
         
         <!-- Robot decorativo -->
         <div class="robot-character">
-            <img src="../static/images/robot.png?v=20250107" alt="Robot IA">
+            <img src="../static/images/images_index/robot.png?v=20250107" alt="Robot IA">
         </div>
     </div>
 
     <!-- Sección Días de Racha -->
-    <div class="footer-section">
+    <div class="footer-section scroll-animation rotate-fade">
         <h2 class="footer-title">¡Días De Racha!</h2>
         
         <!-- Chile decorativo -->
         <div class="chili-character">
-            <img src="../static/images/chile.png?v=20250107" alt="Chile">
+            <img src="../static/images/images_index/chile.png?v=20250107" alt="Chile">
         </div>
         
         <h3 class="footer-subtitle">¿Premios e Insignias?</h3>
@@ -489,5 +535,58 @@
             nuestro sistema de Rachas :)
         </p>
     </div>
+
+    <script>
+        // Función para verificar si un elemento está visible en la pantalla
+        function isElementInViewport(element) {
+            const rect = element.getBoundingClientRect();
+            return (
+                rect.top >= 0 &&
+                rect.left >= 0 &&
+                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+            );
+        }
+
+        // Función alternativa más flexible para detectar elementos parcialmente visibles
+        function isElementPartiallyInViewport(element) {
+            const rect = element.getBoundingClientRect();
+            const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+            const windowWidth = window.innerWidth || document.documentElement.clientWidth;
+            
+            return (
+                rect.bottom > 0 &&
+                rect.right > 0 &&
+                rect.top < windowHeight &&
+                rect.left < windowWidth
+            );
+        }
+
+        // Función para activar las animaciones
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('.scroll-animation');
+            
+            elements.forEach(element => {
+                if (isElementPartiallyInViewport(element)) {
+                    element.classList.add('animate');
+                }
+            });
+        }
+
+        // Ejecutar cuando se carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            animateOnScroll();
+        });
+
+        // Ejecutar cuando se hace scroll
+        window.addEventListener('scroll', function() {
+            animateOnScroll();
+        });
+
+        // Ejecutar cuando se redimensiona la ventana
+        window.addEventListener('resize', function() {
+            animateOnScroll();
+        });
+    </script>
 </body>
 </html>
