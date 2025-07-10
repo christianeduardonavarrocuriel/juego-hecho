@@ -1,7 +1,8 @@
 import web
 
 urls = (
-    '/', 'Index'
+    '/', 'Index',
+    '/registrarme', 'Registrarme'
 )
 
 render = web.template.render('templates')
@@ -18,6 +19,17 @@ class Index:
         web.header('ETag', '')
         web.header('Vary', '*')
         return render.index()
+
+class Registrarme:
+    def GET(self):
+        # Headers para evitar caché
+        web.header('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0')
+        web.header('Pragma', 'no-cache')
+        web.header('Expires', '0')
+        web.header('Last-Modified', '')
+        web.header('ETag', '')
+        web.header('Vary', '*')
+        return render.registrarme()
 
 if __name__ == "__main__":
     app.run()
