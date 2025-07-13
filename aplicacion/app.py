@@ -6,7 +6,7 @@ urls = (
     '/quienes_somos', 'QuienesSomos'
 )
 
-render = web.template.render('templates')
+render = web.template.render('templates', cache=False)
 
 app = web.application(urls, globals())
 
