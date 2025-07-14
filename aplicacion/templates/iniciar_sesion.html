@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Adios al Silencio</title>
+    <style>
+        /* Estilo básico para todos los elementos */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Configuración del cuerpo de la página */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(180deg, #00BFFF 0%, #1E90FF 50%, #00BFFF 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Contenedor principal */
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            gap: 80px;
+        }
+
+        /* Sección del ajolote */
+        .ajolote-section {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-left: 0;
+        }
+
+        .ajolote-character {
+            width: 550px;
+            height: 550px;
+            animation: float 3s ease-in-out infinite;
+            margin-left: -200px;
+        }
+
+        .ajolote-character img {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
+        }
+
+        /* Sección del formulario */
+        .form-section {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        /* Botón de cerrar */
+        .close-button {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-button:hover {
+            transform: scale(1.1);
+        }
+
+        .close-button img {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+            transition: all 0.3s ease;
+        }
+
+        .close-button:hover img {
+            filter: drop-shadow(0 6px 15px rgba(0, 0, 0, 0.5));
+        }
+
+        /* Título del formulario */
+        .form-title {
+            color: white;
+            font-size: 3.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.8s ease-out;
+        }
+
+        /* Contenedor del formulario */
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            animation: slideUp 0.8s ease-out 0.2s both;
+        }
+
+        /* Grupos de campos */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            color: white;
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-input {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-input:focus {
+            background: white;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .form-input::placeholder {
+            color: #999;
+            font-style: italic;
+        }
+
+        /* Enlace para registrarse */
+        .register-link {
+            text-align: center;
+            margin: 5px 0 0 0;
+        }
+
+        .register-link a {
+            color: white;
+            font-size: 1rem;
+            text-decoration: underline;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            font-weight: normal;
+        }
+
+        .register-link a:hover {
+            color: #E0F6FF;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Botón de envío */
+        .submit-button {
+            background: linear-gradient(135deg, #FF1493, #FF69B4);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 6px 20px rgba(255, 20, 147, 0.4);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .submit-button:hover {
+            background: linear-gradient(135deg, #C71585, #FF1493);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 20, 147, 0.6);
+        }
+
+        .submit-button:active {
+            transform: translateY(-1px);
+        }
+
+        /* Animaciones */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Estilos responsivos */
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+                gap: 40px;
+            }
+
+            .ajolote-section {
+                justify-content: center;
+                padding-left: 0;
+            }
+
+            .ajolote-character {
+                width: 400px;
+                height: 400px;
+                margin-left: 0;
+            }
+
+            .form-title {
+                font-size: 2.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto;
+                min-height: 100vh;
+            }
+
+            .container {
+                padding: 40px 20px;
+                gap: 30px;
+            }
+
+            .ajolote-character {
+                width: 280px;
+                height: 280px;
+                margin-left: 0;
+            }
+
+            .form-title {
+                font-size: 2.2rem;
+                margin-bottom: 30px;
+            }
+
+            .form-input {
+                padding: 12px 18px;
+                font-size: 1rem;
+            }
+
+            .submit-button {
+                padding: 15px 35px;
+                font-size: 1.2rem;
+            }
+
+            .close-button {
+                width: 50px;
+                height: 50px;
+                top: 20px;
+                right: 20px;
+            }
+
+            .close-button img {
+                width: 100%;
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Botón de cerrar -->
+    <div class="close-button" onclick="window.location.href='/'">
+        <img src="../static/images/images_iniciar_sesion/regresar.png" alt="Regresar">
+    </div>
+    
+    <!-- Contenedor principal -->
+    <div class="container">
+        <!-- Sección del ajolote -->
+        <div class="ajolote-section">
+            <div class="ajolote-character">
+                <img src="../static/images/images_iniciar_sesion/ajolote_astronauta.png" alt="Ajolote Astronauta">
+            </div>
+        </div>
+
+        <!-- Sección del formulario -->
+        <div class="form-section">
+            <h1 class="form-title">Iniciar Sesión</h1>
+            
+            <form class="form-container" action="#" method="POST">
+                <div class="form-group">
+                    <label class="form-label" for="correo">Correo Electrónico:</label>
+                    <input 
+                        type="email" 
+                        id="correo" 
+                        name="correo" 
+                        class="form-input" 
+                        placeholder="ejemplo@gmail.com"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="contraseña">Contraseña:</label>
+                    <input 
+                        type="password" 
+                        id="contraseña" 
+                        name="contraseña" 
+                        class="form-input" 
+                        placeholder="Ingresa tu contraseña"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="submit-button">Iniciar Sesión</button>
+
+                <!-- Enlace para registrarse -->
+                <div class="register-link">
+                    <a href="/registrarme">¿No tienes cuenta? Regístrate aquí</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Función para manejar el envío del formulario
+        document.querySelector('.form-container').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Aquí puedes agregar la lógica para validar los datos
+            // Por ahora solo mostramos una alerta
+            alert('¡Inicio de sesión exitoso! Bienvenido de vuelta');
+            
+            // Redirigir después del inicio de sesión
+            // window.location.href = '/';
+        });
+
+        // Animación adicional al cargar la página
+        window.addEventListener('load', function() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+            
+            setTimeout(function() {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+    </script>
+</body>
+</html>
