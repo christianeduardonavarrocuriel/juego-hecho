@@ -1,0 +1,512 @@
+<!doctype html>
+<!--
+  Archivo: index.html
+  Propósito: Juego/actividad de reconocimiento de emociones usando seguimiento facial (MindAR) y un avatar 3D con three.js.
+  Secciones:
+    - <style>: Estilos y layout de la interfaz.
+    - Contenedor principal (#container): Render AR + overlay de feedback.
+    - Panel lateral (#reference-image-container): Imagen y texto de la emoción a imitar.
+    - Script (type=module): Lógica completa (carga modelo, tracking, detección emociones, UI).
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raccoon + Felicidad + Sorpresa</title>
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+        "mindar-face-three":"https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-face-three.prod.js"
+      }
+    }
+    </script>
+    <style>
+  /* Botón principal para pasar al siguiente reto (el de sorpresa quedó obsoleto pero se conserva por si se reutiliza) */
+  #next-button {
+        position: fixed;
+        bottom: 38px;
+        right: 38px;
+        background: #FF1493;
+        color: #fff;
+        border: none;
+        border-radius: 32px;
+        padding: 20px 48px;
+        font-size: 2rem;
+        font-weight: 700;
+        box-shadow: 0 4px 24px rgba(255,20,147,0.18);
+        cursor: pointer;
+        z-index: 200;
+        display: none;
+        transition: background 0.2s, box-shadow 0.2s;
+      }
+      #next-button:hover {
+        background: #e01382;
+        box-shadow: 0 6px 32px rgba(255,20,147,0.28);
+      }
+  /* Reset básico + ocupar viewport completo */
+  html, body {
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+      }
+  /* Fondo degradado y alineación del contenedor AR */
+  body {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        height: 100vh;
+        background: linear-gradient(135deg, #00bfff, #1e90ff);
+        padding-left: 50px;
+      }
+  /* Contenedor donde MindAR monta el canvas WebGL y video */
+  #container {
+        width: 700px;
+        height: 500px;
+        border-radius: 24px;
+        border: 2px solid #fff;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        background: transparent;
+      }
+      #success-overlay {
+        display: none;
+      }
+  /* Check verde que aparece al superar el umbral de la emoción */
+  #central-checkmark {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100px;
+        height: 100px;
+        z-index: 21;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border-radius: 50%;
+        box-shadow: none;
+        flex-direction: column;
+        border: none;
+        animation: pop-check 0.4s cubic-bezier(.5,1.8,.5,1) 1;
+      }
+      /* Animación de aparición del check (ligero pop) */
+      @keyframes pop-check {
+        0% { transform: translate(-50%, -50%) scale(0.7); opacity: 0; }
+        60% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+        100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+      }
+      #central-checkmark svg {
+        width: 80px;
+        height: 80px;
+        color: #11a111;
+        display: block;
+        margin: 0 auto;
+        filter: drop-shadow(0 4px 16px rgba(17,161,17,0.25));
+        background: none;
+        padding: 0;
+        box-shadow: none;
+      }
+      /* Texto debajo del check mostrando la emoción detectada */
+      #expression-label {
+        margin-top: 16px;
+        font-size: 1.45rem;
+        font-weight: 700;
+        /* Color cambiado a blanco */
+        color: #fff;
+        text-align: center;
+        text-shadow: 0 2px 8px rgba(255,255,255,0.5);
+        letter-spacing: 0.5px;
+        font-family: 'Segoe UI', Arial, sans-serif;
+      }
+      /* Panel lateral con la imagen y el texto de la pregunta */
+      #reference-image-container {
+  position: fixed;
+  top: 50%;
+  left: calc(50% + 380px);
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 100;
+      }
+      /* Título/pregunta sobre la emoción */
+      #reference-image-label {
+  font-size: 2.7rem;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 38px;
+  text-shadow: 0 2px 16px rgba(0,0,0,0.32);
+  letter-spacing: 1.2px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  text-align: center;
+  width: 700px;
+  max-width: 95vw;
+  white-space: normal;
+  word-break: break-word;
+  align-self: center;
+      }
+      /* Imagen de referencia que el usuario debe imitar */
+      #reference-image {
+        width: 420px;
+        height: auto;
+        border-radius: 22px;
+        box-shadow: none;
+        border: none;
+        background: none;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Contenedor principal AR (video + canvas WebGL + overlays) -->
+    <div id="container">
+      <!-- Overlay de feedback cuando se detecta la emoción -->
+      <div id="central-checkmark">
+        <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22 44 Q38 66 62 24" stroke="#11a111" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <div id="expression-label"></div>
+      </div>
+      <!-- Imagen y texto de referencia (panel lateral) -->
+      <div id="reference-image-container">
+        <div id="reference-image-label">¿Qué siente esta persona?</div>
+        <img id="reference-image" src="../static/images/images_introduccion/felicidad.png" alt="Referencia Felicidad" />
+      </div>
+      <!-- Botón para pasar al siguiente reto una vez detectada la emoción -->
+      <button id="next-button">Siguiente</button>
+    </div>
+    <audio id="success-audio" src="../static/audio/audio_introduccion/correcto.mp3" preload="auto"></audio>
+    <script type="module">
+      /********************
+       * IMPORTS PRINCIPALES
+       * three                -> Motor 3D.
+       * GLTFLoader           -> Carga modelos .glb/.gltf (el mapache).
+       * MindARThree          -> Seguimiento facial + integración con three.js.
+       ********************/ 
+      import * as THREE from 'three';
+      import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+      import { MindARThree } from 'mindar-face-three';
+
+      /********************
+       * CONFIGURACIÓN DE UMBRALES (sensibilidad por emoción)
+       * Valores entre 0 y 1. Mientras más bajo, más fácil de detectar.
+       ********************/ 
+      const THRESHOLDS = {
+        happy: 0.5,     // Sonrisa amplia
+        surprise: 0.5,  // Boca abierta + ojos abiertos
+        angry: 0.5,    // Ajustado a 35% solicitado
+      };
+  // Mostrar panel de depuración de enojo (poner true si lo necesitas de nuevo)
+  const SHOW_ANGRY_DEBUG = false;
+      // Mínimos específicos por componente para enojo para evitar falsos positivos (mano cubriendo rostro)
+      const ANGRY_COMPONENT_MIN = {
+        browDown: 0.30,   // Más permisivo de nuevo
+        noseSneer: 0.20,
+        mouthPress: 0.20,
+        jawClench: 0.15,
+      };
+      // Menos frames consecutivos (más sensible)
+	const ANGRY_FRAMES_REQUIRED = 3;
+  // Umbral dinámico (se puede auto-bajar si no se alcanza)
+  let angryDynamicThreshold = THRESHOLDS.angry;
+  const ANGRY_MIN_THRESHOLD = 0.30; // Ajuste para permitir ligera auto-reducción
+  let angryNoProgressFrames = 0;
+  const ANGRY_ADAPT_INTERVAL = 180; // ~3s a 60fps
+  let angryMaxRecent = 0;
+      let angryConsecutiveFrames = 0;
+
+      /********************
+       * LISTA DE EMOCIONES (estructura extensible)
+       * key: clave interna usada en el cálculo
+       * label: texto mostrado al usuario
+       * img: ruta de la imagen de referencia a imitar
+       ********************/ 
+      const EMOTIONS = [
+        { key: 'happy',    label: 'Felicidad', img: '../static/images/images_introduccion/felicidad.png' },
+        { key: 'surprise', label: 'Sorpresa',  img: '../static/images/images_introduccion/sorpresa.png' },
+        { key: 'angry',    label: 'Enojo',     img: '../static/images/images_introduccion/enojo.png' }
+      ];
+
+      // Índice del desafío actual y estado de bloqueo (cuando ya acertaste).
+      let currentEmotionIndex = 0;
+      let emotionLocked = false;
+
+      /********************
+       * CLASE Avatar
+       * - Carga y guarda el modelo 3D.
+       * - Aplica los blendshapes de MindAR al modelo (morph targets) suavizando cambios.
+       * - Calcula puntuaciones de emociones a partir de blendshapes crudos.
+       ********************/ 
+      class Avatar {
+        constructor() {
+          this.gltf = null;                 // Objeto GLTF cargado
+          this.morphTargetMeshes = [];      // Mallas con morph targets (expresiones)
+          this.previousValues = new Map();  // Para suavizado temporal
+        }
+
+        // Carga del modelo GLB y extracción de mallas con morph targets
+        async init() {
+          const url = "https://assets.codepen.io/9177687/raccoon_head.glb";
+          const gltf = await new Promise((resolve, reject) => {
+            const loader = new GLTFLoader();
+            loader.load(url, (gltf) => resolve(gltf), undefined, reject);
+          });
+          gltf.scene.traverse((object) => {
+            if ((object).isBone && !this.root) this.root = object; // Guarda raíz ósea (opcional)
+            if (!(object).isMesh) return;
+            const mesh = object;
+            if (!mesh.morphTargetDictionary || !mesh.morphTargetInfluences) return; // Solo mallas válidas
+            this.morphTargetMeshes.push(mesh);
+          });
+          this.gltf = gltf;
+        }
+
+        /********************
+         * updateBlendshapes
+         * Convierte categorías de MindAR a un Map y las aplica a los morph targets con suavizado.
+         * Devuelve un objeto con las puntuaciones de cada emoción.
+         ********************/
+        updateBlendshapes(blendshapes) {
+          const categories = blendshapes.categories || [];
+          const coefsMap = new Map();
+          for (let i = 0; i < categories.length; ++i) {
+            coefsMap.set(categories[i].categoryName, categories[i].score);
+          }
+          // Guardamos último mapa para uso externo (evaluaciones adicionales)
+          this.lastCoefsMap = coefsMap;
+          // Aplicar blendshapes a cada malla compatible
+          for (const mesh of this.morphTargetMeshes) {
+            if (!mesh.morphTargetDictionary || !mesh.morphTargetInfluences) continue;
+            for (const [name, value] of coefsMap) {
+              if (!Object.prototype.hasOwnProperty.call(mesh.morphTargetDictionary, name)) continue;
+              const idx = mesh.morphTargetDictionary[name];
+              const prevValue = this.previousValues.get(name) || 0;
+              // Factor de suavizado: sube a 0.7 si quieres reacciones más rápidas
+              const smoothedValue = prevValue + (value - prevValue) * 0.3;
+              this.previousValues.set(name, smoothedValue);
+              mesh.morphTargetInfluences[idx] = smoothedValue;
+            }
+          }
+          return {
+            happy: this.computeHappy(coefsMap),
+            surprise: this.computeSurprise(coefsMap),
+            angry: this.computeAngry(coefsMap)
+          };
+        }
+
+        // Sorpresa: boca abierta (jawOpen) pesa más, ojos abiertos complementan
+        computeSurprise(map) {
+          const mouthOpen = map.get('jawOpen') || 0;
+            const eyeWide = ((map.get('eyeWideLeft') || 0) + (map.get('eyeWideRight') || 0)) * 0.5;
+          const score = (mouthOpen * 0.75) + (eyeWide * 0.25);
+          return Math.max(0, Math.min(1, score));
+        }
+        // Felicidad: promedio de sonrisas en los dos lados
+        computeHappy(map) {
+          const smileLeft = map.get('mouthSmileLeft') || 0;
+          const smileRight = map.get('mouthSmileRight') || 0;
+          const score = (smileLeft + smileRight) / 2;
+          return Math.max(0, Math.min(1, score));
+        }
+        // Enojo más sensible: enfatiza cejas y reduce mínimos
+        computeAngry(map) {
+          const browDown = ((map.get('browDownLeft') || 0) + (map.get('browDownRight') || 0)) / 2;
+          const mouthPress = ((map.get('mouthPressLeft') || 0) + (map.get('mouthPressRight') || 0)) / 2;
+          const noseSneer = ((map.get('noseSneerLeft') || 0) + (map.get('noseSneerRight') || 0)) / 2;
+          const jawClench = (map.get('jawClench') || 0);
+          if (browDown < ANGRY_COMPONENT_MIN.browDown) return 0; // requisito mínimo básico
+          const othersAvg = (mouthPress + noseSneer + jawClench) / 3;
+          // Aumentamos peso de cejas al 85%
+          const raw = browDown * 0.85 + othersAvg * 0.15;
+          return Math.min(1, raw);
+        }
+      }
+
+      // Instancias globales (se crean una vez)
+      let mindarThree = null; // Controlador AR (cámara + tracking)
+      let avatar = null;      // Avatar 3D
+
+      /********************
+       * setup()
+       * - Inicializa MindARThree (cámara + renderer + escena)
+       * - Crea luz, ancla facial y carga el avatar.
+       ********************/ 
+      const setup = async () => {
+        mindarThree = new MindARThree({ container: document.querySelector('#container') });
+        const { renderer, scene } = mindarThree;
+        if (renderer) {
+          try { renderer.setClearColor(0x000000, 0); } catch(e){}
+          if (typeof renderer.setClearAlpha === 'function') { try { renderer.setClearAlpha(0); } catch(e){} }
+          renderer.domElement.style.background = 'transparent';
+        }
+        // Luz ambiental / hemisférica para iluminar suavemente el modelo
+        const light = new THREE.HemisphereLight(0xffffff, 0x444466, 1);
+        scene.add(light);
+        // Ancla ligada al rostro detectado (ID 1 = rostro principal)
+        const anchor = mindarThree.addAnchor(1);
+        avatar = new Avatar();
+        await avatar.init();
+        avatar.gltf.scene.scale.set(3, 3, 3);
+        anchor.group.add(avatar.gltf.scene);
+      };
+      
+
+      /********************
+       * start()
+       * - Arranca el tracking facial.
+       * - Gestiona UI (texto, check, botón) y el bucle de render.
+       ********************/ 
+      const start = async () => {
+        if (!mindarThree) await setup();
+  await mindarThree.start();
+  console.log('[DEBUG] MindAR iniciado, esperando primer frame de cámara...');
+        const { renderer, scene, camera } = mindarThree;
+        // Referencias UI
+        const centralCheckmark = document.getElementById('central-checkmark');
+        const expressionLabel = document.getElementById('expression-label');
+        const nextButton = document.getElementById('next-button');
+        const referenceImageLabel = document.getElementById('reference-image-label');
+        const referenceImage = document.getElementById('reference-image');
+        const successAudio = document.getElementById('success-audio');
+
+        // Actualiza la UI para la emoción actual
+        const setEmotionUI = (index) => {
+          const emotion = EMOTIONS[index];
+          // Texto dinámico según emoción
+          if (emotion.key === 'angry') {
+            referenceImageLabel.textContent = '¿Qué siente el zorro?';
+          } else if (emotion.key === 'surprise') {
+            referenceImageLabel.textContent = '¿Qué siente este pandita?';
+          } else {
+            referenceImageLabel.textContent = '¿Qué siente esta persona?';
+          }
+          referenceImage.src = emotion.img;
+          // Reset visual
+          expressionLabel.textContent = '';
+          centralCheckmark.style.display = 'none';
+          nextButton.style.display = 'none';
+        }
+
+        setEmotionUI(currentEmotionIndex); // Inicial
+
+        // Avanzar al siguiente reto
+        nextButton.addEventListener('click', () => {
+          if (currentEmotionIndex === EMOTIONS.length - 1) {
+            window.location.href = '/leccion_completada';
+          } else {
+            currentEmotionIndex++;
+            emotionLocked = false; // Desbloquear para nueva detección
+            setEmotionUI(currentEmotionIndex);
+          }
+        });
+
+        /********************
+         * Bucle principal de animación + tracking
+         * - Lee el último estimate facial.
+         * - Actualiza morph targets del avatar siempre.
+         * - Si supera umbral y no estaba bloqueado -> bloquea y muestra UI.
+         ********************/
+        renderer.setAnimationLoop(() => {
+          const estimate = mindarThree.getLatestEstimate();
+          if (!estimate) {
+            // Primera fase: aún no hay rostro detectado
+          }
+          const emotion = EMOTIONS[currentEmotionIndex];
+          let threshold = THRESHOLDS[emotion.key];
+          if (emotion.key === 'angry') threshold = angryDynamicThreshold;
+
+          if (estimate && estimate.blendshapes) {
+            const scores = avatar.updateBlendshapes(estimate.blendshapes);
+            if (!emotionLocked) {
+              let emotionDetected = false;
+              if (emotion.key === 'angry') {
+                // Evaluación específica con estabilidad temporal
+                const m = avatar.lastCoefsMap || new Map();
+                const browDown = ((m.get('browDownLeft') || 0) + (m.get('browDownRight') || 0)) / 2;
+                const mouthPress = ((m.get('mouthPressLeft') || 0) + (m.get('mouthPressRight') || 0)) / 2;
+                const noseSneer = ((m.get('noseSneerLeft') || 0) + (m.get('noseSneerRight') || 0)) / 2;
+                const jawClench = (m.get('jawClench') || 0);
+                const baseScore = scores.angry;
+                if (baseScore > angryMaxRecent) angryMaxRecent = baseScore;
+                // Solo cejas mínimas
+                const componentsOk = browDown >= ANGRY_COMPONENT_MIN.browDown;
+                if (componentsOk && baseScore >= threshold) {
+                  angryConsecutiveFrames++;
+                  if (angryConsecutiveFrames >= ANGRY_FRAMES_REQUIRED) {
+                    emotionLocked = true;
+                    emotionDetected = true;
+                  }
+                } else {
+                  angryConsecutiveFrames = 0; // Reinicia conteo si falla algún frame
+                }
+                // Adaptación: si tras intervalo no se llega al 80% del threshold, se reduce un poco
+                if (baseScore < threshold * 0.8) {
+                  angryNoProgressFrames++;
+                }
+                if (angryNoProgressFrames >= ANGRY_ADAPT_INTERVAL) {
+                  // Baja un poco más rápido si no se alcanza ni el 70% del threshold
+                  if (angryMaxRecent < threshold * 0.7 && angryDynamicThreshold > ANGRY_MIN_THRESHOLD) {
+                    angryDynamicThreshold = Math.max(ANGRY_MIN_THRESHOLD, angryDynamicThreshold - 0.02);
+                  }
+                  angryNoProgressFrames = 0;
+                  angryMaxRecent = 0;
+                }
+                // Debug overlay (desactivado por defecto)
+                if (SHOW_ANGRY_DEBUG) {
+                  if (!window.__angryDebug) {
+                    const el = document.createElement('div');
+                    el.style.cssText = 'position:fixed;left:10px;bottom:10px;padding:8px 10px;background:rgba(0,0,0,0.55);color:#fff;font:12px monospace;z-index:999;border-radius:8px;';
+                    document.body.appendChild(el);
+                    window.__angryDebug = el;
+                  }
+                  window.__angryDebug.innerHTML = `Angry ${(baseScore*100).toFixed(1)}% / ${(threshold*100).toFixed(0)}% (dyn)<br>`+
+                    `Frames ${angryConsecutiveFrames}/${ANGRY_FRAMES_REQUIRED}<br>`+
+                    `browDown ${(browDown*100).toFixed(0)}% (min ${(ANGRY_COMPONENT_MIN.browDown*100).toFixed(0)}%)<br>`+
+                    `mouthPress ${(mouthPress*100).toFixed(0)}%<br>`+
+                    `noseSneer ${(noseSneer*100).toFixed(0)}%<br>`+
+                    `jawClench ${(jawClench*100).toFixed(0)}%<br>`+
+                    `Auto-ajuste si <80% cada ${(ANGRY_ADAPT_INTERVAL/60).toFixed(1)}s`;
+                } else if (window.__angryDebug) {
+                  // Si existía de una versión anterior, lo removemos
+                  window.__angryDebug.remove();
+                  window.__angryDebug = null;
+                }
+              } else {
+                // Otras emociones: umbral simple
+                if (scores[emotion.key] >= threshold) {
+                  emotionLocked = true;
+                  emotionDetected = true;
+                }
+              }
+
+              if (emotionDetected) {
+                successAudio.play();
+              }
+            }
+          }
+
+            if (emotionLocked) {
+            expressionLabel.textContent = emotion.label; // Mostrar nombre emoción acertada
+            centralCheckmark.style.display = 'flex';
+            nextButton.style.display = 'block';
+            if (currentEmotionIndex === EMOTIONS.length - 1) {
+              nextButton.textContent = 'Finalizar';
+            }
+          } else {
+            expressionLabel.textContent = '';
+            centralCheckmark.style.display = 'none';
+            nextButton.style.display = 'none';
+          }
+          renderer.render(scene, camera); // Render 3D
+        });
+      };
+      start(); // Lanzar aplicación
+    </script>
+  </body>
+</html>

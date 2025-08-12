@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrarme - Adios al Silencio</title>
+    <style>
+        /* Estilo básico para todos los elementos */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Configuración del cuerpo de la página */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(180deg, #00BFFF 0%, #1E90FF 50%, #00BFFF 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            overflow-y: auto;
+            padding: 40px 0;
+        }
+
+        /* Contenedor principal */
+        .container {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            width: 100%;
+            max-width: 1200px;
+            padding: 15px;
+            gap: 40px;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Sección del ajolote */
+        .ajolote-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding-left: 0;
+            padding-right: 80px;
+            margin-left: -80px;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+            max-height: 90vh;
+        }
+
+        .ajolote-character {
+            width: 550px;
+            height: 550px;
+            animation: float 3s ease-in-out infinite;
+            margin: 0;
+        }
+
+        .ajolote-character img {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
+        }
+
+        /* Acciones debajo del ajolote */
+        .ajolote-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: -20px;
+            width: 100%;
+        }
+
+        /* Sección del formulario */
+        .form-section {
+            flex: 1;
+            max-width: 600px;
+            max-height: none;
+            overflow-y: visible;
+        }
+
+        /* Botón de cerrar */
+        .close-button {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-button:hover {
+            transform: scale(1.1);
+        }
+
+        .close-button img {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+            transition: all 0.3s ease;
+        }
+
+        .close-button:hover img {
+            filter: drop-shadow(0 6px 15px rgba(0, 0, 0, 0.5));
+        }
+
+        /* Título del formulario */
+        .form-title {
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.8s ease-out;
+        }
+
+        /* Contenedor del formulario */
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            animation: slideUp 0.8s ease-out 0.2s both;
+        }
+
+        /* Grupos de campos */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .form-label {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-input {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-input:focus {
+            background: white;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .form-input::placeholder {
+            color: #999;
+            font-style: italic;
+        }
+
+        /* Estilo específico para el select */
+        select.form-input {
+            padding-left: 15px;
+            padding-right: 45px;
+            text-align: left;
+            background-image: url("../static/images/images_registrar_chiquillo/flecha_dropdown.png");
+            background-position: right 15px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            transition: none;
+        }
+
+        select.form-input:focus {
+            background-image: url("../static/images/images_registrar_chiquillo/flecha_dropdown.png");
+            background-position: right 15px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            transform: none;
+        }
+
+        /* Enlace para iniciar sesión */
+        .login-link {
+            text-align: center;
+            margin: 5px 0 0 0;
+        }
+
+        .login-link a {
+            color: white;
+            font-size: 1rem;
+            text-decoration: underline;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            font-weight: normal;
+        }
+
+        .login-link a:hover {
+            color: #E0F6FF;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Botón de envío */
+        .submit-button {
+            background: linear-gradient(135deg, #FF1493, #FF69B4);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 6px 20px rgba(255, 20, 147, 0.4);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .submit-button:hover {
+            background: linear-gradient(135deg, #C71585, #FF1493);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 20, 147, 0.6);
+        }
+
+        .submit-button:active {
+            transform: translateY(-1px);
+        }
+
+        /* Estilos para múltiples chiquillos */
+        .chiquillo-form {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .chiquillo-title {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .chiquillo-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 0px;
+        }
+
+        .add-chiquillo-btn, .remove-chiquillo-btn {
+            background: linear-gradient(135deg, #32CD32);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(50, 205, 50, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .remove-chiquillo-btn {
+            background: linear-gradient(135deg, #DC143C);
+            box-shadow: 0 4px 15px rgba(255, 99, 71, 0.4);
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+
+        .remove-chiquillo-btn:hover {
+            background: linear-gradient(135deg, #DC143C, #FF6347);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 99, 71, 0.6);
+        }
+
+        /* Animaciones */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Estilos responsivos */
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+                gap: 40px;
+                align-items: center;
+            }
+
+            .ajolote-section {
+                justify-content: center;
+                padding-left: 0;
+                padding-right: 0;
+                margin-left: 0;
+                position: static;
+            }
+
+            .ajolote-character {
+                width: 500px;
+                height: 500px;
+                margin: 0;
+            }
+
+            .ajolote-actions {
+                margin-top: -20px;
+            }
+
+            .form-title {
+                font-size: 2.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto;
+                min-height: 100vh;
+            }
+
+            .container {
+                padding: 40px 20px;
+                gap: 30px;
+            }
+
+            .ajolote-character {
+                width: 380px;
+                height: 380px;
+                margin-left: 0;
+            }
+
+            .form-title {
+                font-size: 2rem;
+                margin-bottom: 25px;
+            }
+
+            .form-input {
+                padding: 12px 18px;
+                font-size: 1rem;
+            }
+
+            .submit-button {
+                padding: 15px 35px;
+                font-size: 1.2rem;
+            }
+
+            .close-button {
+                width: 50px;
+                height: 50px;
+                top: 20px;
+                right: 20px;
+            }
+
+            .close-button img {
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+        /* Estilos para el sistema de contraseña con animales */
+        .password-display {
+            min-height: 60px;
+            padding: 10px 15px;
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .password-display:empty::before {
+            content: "Haz clic en los animales para crear tu contraseña";
+            color: rgba(255, 255, 255, 0.7);
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        .password-animal {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            animation: animalPop 0.3s ease-out;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .password-animal:hover {
+            transform: scale(1.1);
+            border-color: #ff6b6b;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+        }
+
+        @keyframes animalPop {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .shape-controls {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .shape-btn {
+            width: 45px;
+            height: 45px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .shape-btn.animal img {
+            width: 35px;
+            height: 35px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .shape-btn:hover {
+            transform: translateY(-2px) scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .shape-btn:active {
+            transform: translateY(-1px) scale(1.05);
+        }
+
+        .clear-btn {
+            grid-column: span 4;
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(135deg, #ff6b6b, #ff5252);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .clear-btn:hover {
+            background: linear-gradient(135deg, #ff5252, #f44336);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <!-- Botón de cerrar -->
+    <div class="close-button" onclick="window.location.href='/registrar_tutor'">
+        <img src="../static/images/images_registrar_chiquillo/regresar.png" alt="Regresar">
+    </div>
+    <!-- Contenedor principal -->
+    <div class="container">
+        <!-- Sección del ajolote -->
+        <div class="ajolote-section">
+            <div class="ajolote-character">
+                <img src="../static/images/images_registrar_chiquillo/ajolote_paleta.png" alt="Ajolote">
+            </div>
+            
+            <!-- Botón y enlace debajo del ajolote -->
+            <div class="ajolote-actions">
+                <button type="submit" class="submit-button" form="registro-form">Empezar</button>
+                
+                <!-- Enlace para iniciar sesión -->
+                <div class="login-link">
+                    <a href="/iniciar_sesion">¿Ya tienes una cuenta?</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección del formulario -->
+        <div class="form-section">
+            <h1 class="form-title">Registrar Niños</h1>
+            
+            <form class="form-container" id="registro-form" action="/registrar_chiquillo" method="POST">
+                <!-- Contenedor para múltiples chiquillos -->
+                <div id="chiquillos-container">
+                    <!-- Primer chiquillo (siempre presente) -->
+                    <div class="chiquillo-form" data-chiquillo="1">
+                        <h3 class="chiquillo-title">Niño 1</h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="tipo-usuario-1">¿Qué eres?</label>
+                            <select 
+                                id="tipo-usuario-1" 
+                                name="tipo_usuario_1" 
+                                class="form-input" 
+                                required
+                            >
+                                <option value="" disabled selected>Selecciona una opción</option>
+                                <option value="Ajolotito">Ajolotito</option>
+                                <option value="Ajolotita">Ajolotita</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="nombre-1">Nombre:</label>
+                            <input 
+                                type="text" 
+                                id="nombre-1" 
+                                name="nombre_1" 
+                                class="form-input" 
+                                placeholder="Escribe el nombre"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="apellidos-1">Primer Apellido y Segundo Apellido:</label>
+                            <input 
+                                type="text" 
+                                id="apellidos-1" 
+                                name="apellidos_1" 
+                                class="form-input" 
+                                placeholder="Escribe los apellidos"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="contraseña-1">Selecciona tu contraseña con animales:</label>
+                            <div class="password-display" id="password-display-1">
+                                <!-- Aquí se mostrarán las imágenes de animales seleccionados -->
+                            </div>
+                            <input 
+                                type="hidden" 
+                                id="contraseña-1" 
+                                name="contraseña_1" 
+                                required
+                            >
+                            <!-- Controles de figuras geométricas -->
+                            <div class="shape-controls">
+                                <button type="button" class="shape-btn animal" data-shape="ajolote">
+                                    <img src="../static/images/images_emojis/ajolote_cara.png" alt="Ajolote">
+                                </button>
+                                <button type="button" class="shape-btn animal" data-shape="borrego">
+                                    <img src="../static/images/images_emojis/borrego_cara.png" alt="Borrego">
+                                </button>
+                                <button type="button" class="shape-btn animal" data-shape="oso">
+                                    <img src="../static/images/images_emojis/oso.png" alt="Oso">
+                                </button>
+                                <button type="button" class="shape-btn animal" data-shape="perro">
+                                    <img src="../static/images/images_emojis/perro.png" alt="Perro">
+                                </button>
+                                <button type="button" class="clear-btn">Borrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones para agregar/quitar chiquillos -->
+                <div class="chiquillo-controls">
+                    <button type="button" class="add-chiquillo-btn" onclick="agregarChiquillo()">
+                        + Agregar otro niño
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        var chiquilloCounter = 1;
+
+        // Función para agregar un nuevo chiquillo
+        function agregarChiquillo() {
+            chiquilloCounter++;
+            var container = document.getElementById('chiquillos-container');
+            
+            var nuevoChiquillo = document.createElement('div');
+            nuevoChiquillo.className = 'chiquillo-form';
+            nuevoChiquillo.setAttribute('data-chiquillo', chiquilloCounter);
+            
+            var html = '<button type="button" class="remove-chiquillo-btn" onclick="eliminarChiquillo(' + chiquilloCounter + ')">✕ Eliminar</button>';
+            html += '<h3 class="chiquillo-title">Niño ' + chiquilloCounter + '</h3>';
+            html += '<div class="form-group">';
+            html += '<label class="form-label" for="tipo-usuario-' + chiquilloCounter + '">¿Qué eres?</label>';
+            html += '<select id="tipo-usuario-' + chiquilloCounter + '" name="tipo_usuario_' + chiquilloCounter + '" class="form-input" required>';
+            html += '<option value="" disabled selected>Selecciona una opción</option>';
+            html += '<option value="ajolotito">Ajolotito</option>';
+            html += '<option value="ajolotita">Ajolotita</option>';
+            html += '</select>';
+            html += '</div>';
+            html += '<div class="form-group">';
+            html += '<label class="form-label" for="nombre-' + chiquilloCounter + '">Nombre:</label>';
+            html += '<input type="text" id="nombre-' + chiquilloCounter + '" name="nombre_' + chiquilloCounter + '" class="form-input" placeholder="Escribe el nombre" required>';
+            html += '</div>';
+            html += '<div class="form-group">';
+            html += '<label class="form-label" for="apellidos-' + chiquilloCounter + '">Primer Apellido y Segundo Apellido:</label>';
+            html += '<input type="text" id="apellidos-' + chiquilloCounter + '" name="apellidos_' + chiquilloCounter + '" class="form-input" placeholder="Escribe los apellidos" required>';
+            html += '</div>';
+            html += '<div class="form-group">';
+            html += '<label class="form-label" for="contraseña-' + chiquilloCounter + '">Selecciona tu contraseña con animales:</label>';
+            html += '<div class="password-display" id="password-display-' + chiquilloCounter + '"></div>';
+            html += '<input type="hidden" id="contraseña-' + chiquilloCounter + '" name="contraseña_' + chiquilloCounter + '" required>';
+            html += '<div class="shape-controls">';
+            html += '<button type="button" class="shape-btn animal" data-shape="ajolote"><img src="../static/images/images_emojis/ajolote_cara.png" alt="Ajolote"></button>';
+            html += '<button type="button" class="shape-btn animal" data-shape="borrego"><img src="../static/images/images_emojis/borrego_cara.png" alt="Borrego"></button>';
+            html += '<button type="button" class="shape-btn animal" data-shape="oso"><img src="../static/images/images_emojis/oso.png" alt="Oso"></button>';
+            html += '<button type="button" class="shape-btn animal" data-shape="perro"><img src="../static/images/images_emojis/perro.png" alt="Perro"></button>';
+            html += '<button type="button" class="clear-btn">Borrar</button>';
+            html += '</div>';
+            html += '</div>';
+            
+            nuevoChiquillo.innerHTML = html;
+            container.appendChild(nuevoChiquillo);
+            
+            // Animar la aparición del nuevo formulario
+            nuevoChiquillo.style.opacity = '0';
+            nuevoChiquillo.style.transform = 'translateY(20px)';
+            
+            setTimeout(function() {
+                nuevoChiquillo.style.transition = 'all 0.5s ease';
+                nuevoChiquillo.style.opacity = '1';
+                nuevoChiquillo.style.transform = 'translateY(0)';
+            }, 100);
+        }
+
+        // Función para eliminar un chiquillo
+        function eliminarChiquillo(numero) {
+            var chiquillo = document.querySelector('[data-chiquillo="' + numero + '"]');
+            if (chiquillo) {
+                chiquillo.style.transition = 'all 0.3s ease';
+                chiquillo.style.opacity = '0';
+                chiquillo.style.transform = 'translateY(-20px)';
+                
+                setTimeout(function() {
+                    chiquillo.remove();
+                    reordenarChiquillos();
+                }, 300);
+            }
+        }
+
+        // Función para reordenar los números de los chiquillos después de eliminar uno
+        function reordenarChiquillos() {
+            var chiquillos = document.querySelectorAll('.chiquillo-form');
+            chiquilloCounter = 0;
+            
+            for (var i = 0; i < chiquillos.length; i++) {
+                chiquilloCounter = i + 1;
+                var chiquillo = chiquillos[i];
+                chiquillo.setAttribute('data-chiquillo', chiquilloCounter);
+                
+                // Actualizar el título
+                var titulo = chiquillo.querySelector('.chiquillo-title');
+                titulo.textContent = 'Niño ' + chiquilloCounter;
+                
+                // Actualizar IDs y names de los campos
+                var campos = chiquillo.querySelectorAll('input, select');
+                for (var j = 0; j < campos.length; j++) {
+                    var campo = campos[j];
+                    var baseId = campo.id.split('-').slice(0, -1).join('-');
+                    var baseName = campo.name.split('_').slice(0, -1).join('_');
+                    
+                    campo.id = baseId + '-' + chiquilloCounter;
+                    campo.name = baseName + '_' + chiquilloCounter;
+                    
+                    // Actualizar el for del label correspondiente
+                    var labels = chiquillo.querySelectorAll('label');
+                    for (var k = 0; k < labels.length; k++) {
+                        var label = labels[k];
+                        if (label.getAttribute('for') && label.getAttribute('for').indexOf(baseId) !== -1) {
+                            label.setAttribute('for', campo.id);
+                        }
+                    }
+                }
+                
+                // Actualizar el botón de eliminar
+                var btnEliminar = chiquillo.querySelector('.remove-chiquillo-btn');
+                if (btnEliminar) {
+                    btnEliminar.setAttribute('onclick', 'eliminarChiquillo(' + chiquilloCounter + ')');
+                }
+            }
+        }
+
+        // Función para manejar el envío del formulario
+        document.getElementById('registro-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Recopilar datos de todos los chiquillos
+            var chiquillos = document.querySelectorAll('.chiquillo-form');
+            var datosChiquillos = [];
+            
+            for (var i = 0; i < chiquillos.length; i++) {
+                var numero = i + 1;
+                var tipo = document.getElementById('tipo-usuario-' + numero).value;
+                var nombre = document.getElementById('nombre-' + numero).value;
+                var apellidos = document.getElementById('apellidos-' + numero).value;
+                var contraseña = document.getElementById('contraseña-' + numero).value;
+                
+                // Validar que todos los campos estén completos
+                if (!tipo || !nombre || !apellidos) {
+                    alert('Por favor, completa todos los campos del Niño ' + numero + '.');
+                    return;
+                }
+                
+                // Validar que la contraseña tenga exactamente 6 animales
+                var animalesSeleccionados = contraseña ? contraseña.split(',').filter(animal => animal.trim() !== '') : [];
+                if (animalesSeleccionados.length !== 6) {
+                    alert('La contraseña del Niño ' + numero + ' debe tener exactamente 6 animales.');
+                    return;
+                }
+                
+                var datos = {
+                    numero: numero,
+                    tipo: tipo,
+                    nombre: nombre,
+                    apellidos: apellidos,
+                    contraseña: contraseña
+                };
+                datosChiquillos.push(datos);
+            }
+            
+            // Crear un formulario dinámico para enviar al servidor
+            var formData = new FormData();
+            
+            for (var i = 0; i < datosChiquillos.length; i++) {
+                var datos = datosChiquillos[i];
+                formData.append('genero', datos.tipo);
+                formData.append('nombres', datos.nombre);
+                formData.append('apellidos', datos.apellidos);
+                formData.append('password_figuras', datos.contraseña);
+            }
+            
+            // Enviar los datos al servidor
+            fetch('/registrar_chiquillo', {
+                method: 'POST',
+                body: formData,
+                redirect: 'follow'  // Permitir seguir redirecciones automáticamente
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Si la respuesta es exitosa, redirigir manualmente
+                    window.location.href = '/saludo_admin';
+                } else {
+                    // Si hay error, obtener el texto del error
+                    return response.text().then(errorText => {
+                        throw new Error(errorText || 'Error en el servidor');
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert(error.message || 'Ocurrió un error al registrar los niños. Por favor, inténtalo de nuevo.');
+            });
+        });
+
+        // Animación adicional al cargar la página
+        window.addEventListener('load', function() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+            
+            setTimeout(function() {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+
+        // Sistema de contraseña visual integrado en el formulario
+        document.addEventListener('click', function(e) {
+            // Manejar clics en botones de animales (tanto botón como imagen)
+            const animalBtn = e.target.closest('.shape-btn.animal');
+            if (animalBtn) {
+                e.preventDefault();
+                const animalName = animalBtn.getAttribute('data-shape');
+                const animalImgSrc = animalBtn.querySelector('img').src;
+                const formGroup = animalBtn.closest('.form-group');
+                const passwordDisplay = formGroup.querySelector('.password-display');
+                const hiddenInput = formGroup.querySelector('input[type="hidden"]');
+                
+                // Limitar a máximo 6 animales
+                if (passwordDisplay.children.length < 6) {
+                    // Crear nueva imagen del animal
+                    const animalImg = document.createElement('img');
+                    animalImg.src = animalImgSrc;
+                    animalImg.className = 'password-animal';
+                    animalImg.alt = animalName;
+                    animalImg.title = animalName;
+                    
+                    // Añadir la imagen al contenedor visual
+                    passwordDisplay.appendChild(animalImg);
+                    
+                    // Actualizar el campo oculto con los nombres de los animales
+                    const currentValue = hiddenInput.value;
+                    hiddenInput.value = currentValue ? currentValue + ',' + animalName : animalName;
+                }
+                
+                // Efecto visual en el botón
+                animalBtn.style.transform = 'translateY(-3px) scale(1.2)';
+                setTimeout(function() {
+                    animalBtn.style.transform = 'translateY(-3px) scale(1.1)';
+                }, 200);
+            }
+            
+            // Manejar clics en botones de borrar
+            if (e.target.classList.contains('clear-btn')) {
+                e.preventDefault();
+                const formGroup = e.target.closest('.form-group');
+                const passwordDisplay = formGroup.querySelector('.password-display');
+                const hiddenInput = formGroup.querySelector('input[type="hidden"]');
+                
+                // Limpiar el contenedor visual y el campo oculto
+                passwordDisplay.innerHTML = '';
+                hiddenInput.value = '';
+            }
+            
+            // Manejar clics en las imágenes de animales para eliminarlas individualmente
+            if (e.target.classList.contains('password-animal')) {
+                e.preventDefault();
+                const formGroup = e.target.closest('.form-group');
+                const passwordDisplay = formGroup.querySelector('.password-display');
+                const hiddenInput = formGroup.querySelector('input[type="hidden"]');
+                const animalToRemove = e.target.alt;
+                
+                // Eliminar la imagen del contenedor visual
+                e.target.remove();
+                
+                // Actualizar el campo oculto removiendo el animal
+                const animals = hiddenInput.value.split(',').filter(animal => animal !== animalToRemove);
+                hiddenInput.value = animals.join(',');
+            }
+            
+            // Compatibilidad con el sistema anterior para botones geométricos
+            if (e.target.classList.contains('shape-btn') && !e.target.classList.contains('animal')) {
+                e.preventDefault();
+                const shapeSymbol = e.target.getAttribute('data-shape');
+                const formGroup = e.target.closest('.form-group');
+                const passwordInput = formGroup.querySelector('input[type="text"]');
+                
+                if (passwordInput.value.length < 10) {
+                    passwordInput.value += shapeSymbol;
+                }
+                
+                // Efecto visual en el botón
+                e.target.style.transform = 'scale(1.2)';
+                setTimeout(function() {
+                    e.target.style.transform = 'scale(1)';
+                }, 200);
+            }
+        });
+
+        // Limpiar contraseña con doble clic
+        document.addEventListener('dblclick', function(e) {
+            if (e.target.type === 'text' && e.target.name.includes('contraseña')) {
+                e.target.value = '';
+            }
+        });
+    </script>
+</body>
+</html>

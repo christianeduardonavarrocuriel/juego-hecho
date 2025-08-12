@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Last-Modified" content="0">
+    <meta http-equiv="If-Modified-Since" content="0">
+    <title>Adiós al Silencio</title>
+    <style>
+        /* Estilo básico para todos los elementos */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Configuración del cuerpo de la página */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(180deg, #00BFFF 0%, #87CEEB 50%, #B0E0E6 100%);
+            min-height: 100vh;
+            background-attachment: fixed;
+        }
+
+        /* Contenedor principal con imagen de fondo */
+        .unified-background {
+            background: url('/static/images/images_index/fondo.png') center center no-repeat;
+            background-size: cover;
+            position: relative;
+        }
+
+        /* Barra superior de navegación */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 50px;
+            background: transparent;
+        }
+
+        /* Logo y texto del sitio */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Contenedor del icono del logo */
+        .logo-icon {
+            width: 90px;
+            height: 90px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Botones de navegación */
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #FF1493, #FF69B4);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 20, 147, 0.3);
+        }
+
+        .nav-btn:hover {
+            background: linear-gradient(135deg, #C71585, #FF1493);
+            transform: translateY(-2px);
+        }
+
+        /* Sección del personaje principal */
+        .hero-section {
+            text-align: center;
+            padding: 10px 20px 20px 20px;
+            color: white;
+        }
+
+        .character {
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .character img {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.3));
+        }
+
+        /* Sección de bienvenida */
+        .welcome-section {
+            background: transparent;
+            margin: -60px 0 0 0;
+            padding: 60px 40px 80px 40px;
+            text-align: center;
+            color: white;
+        }
+
+        .welcome-title {
+            font-size: 2.8rem;
+            margin-bottom: 25px;
+            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.8);
+        }
+
+        .welcome-text {
+            font-size: 2.4rem;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Sección "Nuestra Misión" */
+        .mission-section {
+            background: rgba(30, 144, 255, 0.4);
+            padding: 100px 40px 120px 40px;
+            color: white;
+            position: relative;
+        }
+
+        .mission-title {
+            font-size: 4.2rem;
+            margin-bottom: 30px;
+            font-weight: bold;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .mission-text {
+            font-size: 2.4rem;
+            line-height: 1.7;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Rana en la sección de misión */
+        .dragon-character {
+            position: absolute;
+            bottom: 20px;
+            right: 40px;
+            width: 160px;
+            height: 160px;
+            animation: bounce 3s ease-in-out infinite;
+        }
+
+        .dragon-character img {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.3));
+        }
+
+        /* Sección "Machine Learning" */
+        .ai-section {
+            background: transparent;
+            padding: 100px 40px 100px 40px;
+            color: white;
+            position: relative;
+        }
+
+        /* Fondo azul de la sección IA */
+        .ai-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('/static/images/images_index/azul rey.jpg') center center no-repeat;
+            background-size: cover;
+            z-index: 1;
+        }
+
+        .ai-title {
+            font-size: 4.2rem;
+            margin-bottom: 30px;
+            font-weight: bold;
+            position: relative;
+            z-index: 2;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .ai-text {
+            font-size: 2.4rem;
+            line-height: 1.7;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 2;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Robot en la sección IA */
+        .robot-character {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            width: 160px;
+            height: 160px;
+            animation: pulse 2s ease-in-out infinite;
+            z-index: 3;
+        }
+
+        .robot-character img {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.3));
+        }
+
+        /* Animaciones para que los personajes se muevan */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body>
+    <div class="unified-background">
+        <!-- Barra de navegación superior -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <img src="/static/images/images_index/logo.png" alt="Logo">
+                </div>
+                <span>¡Adiós al Silencio!</span>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="window.location.href='/iniciar_sesion'">JUGAR</button>
+                <!-- Botón de salir - solo visible cuando hay sesión activa -->
+                <button class="nav-btn" id="salir-btn" style="display: none;" onclick="cerrarSesion()">
+                    <img src="/static/images/images_index/salir.png" alt="Salir" style="width: 24px; height: 24px; vertical-align: middle;">
+                </button>
+                <button class="nav-btn" onclick="window.location.href='/registrar_tutor'">CREAR CUENTA</button>
+                <button class="nav-btn" onclick="window.location.href='/quienes_somos'">¿QUIÉNES SOMOS?</button>
+            </div>
+        </div>
+
+        <!-- Personaje principal -->
+        <div class="hero-section scroll-animation scale-up">
+            <div class="character">
+                <img src="/static/images/images_index/personaje principal.png" alt="Personaje Principal">
+            </div>
+        </div>
+
+        <!-- Mensaje de bienvenida -->
+        <div class="welcome-section scroll-animation">
+            <h1 class="welcome-title">Bienvenido a<br>¡Adiós Al Silencio!</h1>
+            <p class="welcome-text">
+                Conoce la Lengua de Señas Mexicana a través de nuestro gran 
+                juego interactivo :3
+            </p>
+        </div>
+    </div>
+
+    <!-- Sección Nuestra Misión -->
+    <div class="mission-section">
+        <h2 class="mission-title">Nuestra Misión:</h2>
+        <p class="mission-text">
+            Construir inclusión desde la infancia para que todos 
+            los niños, puedan comunicarse, hacer amigos y 
+            entender que cada seña es un abrazo sin palabras.
+        </p>
+        <p class="mission-text">
+            Contribuimos a la construcción de una sociedad 
+            inclusiva donde la diversidad lingüística sea patrimonio 
+            nacional.
+        </p>
+        
+        <!-- Rana decorativa -->
+        <div class="dragon-character">
+            <img src="/static/images/images_index/rana.png" alt="Rana">
+        </div>
+    </div>
+
+    <!-- Sección Machine Learning -->
+    <div class="ai-section">
+        <h2 class="ai-title">Machine Learning</h2>
+        <p class="ai-text">
+           "En ¡Adiós al Silencio!, usamos Machine Learning (Aprendizaje Automático)
+            para ayudar a los niños a aprender LSM de forma más precisa y segura. 
+            Cuando el niño activa su cámara, la inteligencia artificial 
+            analiza sus movimientos de manos y expresiones faciales en tiempo real, 
+            y un avatar animado cubre su rostro para proteger su privacidad. 
+            Así, el sistema puede corregir si la señal es correcta sin poner en riesgo la identidad del niño."
+        </p>
+        <p class="ai-text">
+            "No es magia, es Machine Learning: Tecnología que aprende para enseñar."
+        </p>
+        
+        <!-- Robot decorativo -->
+        <div class="robot-character">
+            <img src="/static/images/images_index/robot.png" alt="Robot IA">
+        </div>
+    </div>
+
+    <script>
+        // Función para verificar si hay una sesión activa
+        function verificarSesion() {
+            // Verificar si hay información de sesión en localStorage
+            const usuarioActual = localStorage.getItem('usuarioActual');
+            const tipoUsuario = localStorage.getItem('tipoUsuario');
+            
+            // Si hay sesión activa, mostrar el botón de salir
+            if (usuarioActual && tipoUsuario) {
+                document.getElementById('salir-btn').style.display = 'inline-block';
+            }
+        }
+
+        // Función para cerrar sesión
+        function cerrarSesion() {
+            // Limpiar información de sesión
+            localStorage.removeItem('usuarioActual');
+            localStorage.removeItem('tipoUsuario');
+            
+            // Ocultar el botón de salir
+            document.getElementById('salir-btn').style.display = 'none';
+            
+            // Opcional: Recargar la página para actualizar la interfaz
+            window.location.reload();
+        }
+
+        // Ejecutar verificación cuando se carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            verificarSesion();
+        });
+    </script>
+</body>
+</html>

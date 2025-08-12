@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saludo Chiquillo - Adios al Silencio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(180deg, #00BFFF 0%, #1E90FF 50%, #00BFFF 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Botón de cerrar */
+        .close-button {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-button:hover {
+            transform: scale(1.1);
+        }
+
+        .close-button img {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+            transition: all 0.3s ease;
+        }
+
+        .close-button:hover img {
+            filter: drop-shadow(0 6px 15px rgba(0, 0, 0, 0.5));
+        }
+
+        /* Contenedor principal */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        /* Ajolote */
+        .ajolote-container {
+            margin-bottom: 0px;
+            position: relative;
+            animation: float 3s ease-in-out infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .ajolote-image {
+            width: 450px;
+            height: auto;
+            max-width: 100%;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+        }
+
+        /* Marco del mensaje */
+        .mensaje-container {
+            background: transparent;
+            border: none;
+            border-radius: 25px;
+            padding: 0px 15px;
+            margin-bottom: 5px;
+            box-shadow: none;
+        }
+
+        /* Mensaje de bienvenida */
+        .mensaje-bienvenida {
+            color: white;
+            font-size: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            line-height: 1.4;
+            margin-bottom: 5px;
+            font-family: Arial, sans-serif;
+        }
+
+        .mensaje-perfil {
+            color: white;
+            font-size: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            line-height: 1.4;
+            margin-bottom: 5px;
+            font-family: Arial, sans-serif;
+        }
+
+        /* === ESTILOS PARA EL BOTÓN DE CONTINUAR === */
+        .boton-continuar {
+            /* Fondo degradado de rosa fuerte a rosa claro */
+            background: linear-gradient(135deg, #FF1493, #FF69B4);
+            color: white;                    /* Texto en blanco */
+            border: none;                    /* Sin borde */
+            padding: 20px 60px;             /* Espacio interno: 20px arriba/abajo, 60px izq/der */
+            border-radius: 50px;            /* Bordes muy redondeados */
+            font-size: 1.6rem;              /* Tamaño de letra grande */
+            font-weight: bold;              /* Letra en negrita */
+            cursor: pointer;                /* Manita cuando pasas el mouse */
+            /* Sombra suave que le da efecto de profundidad */
+            box-shadow: 0 8px 25px rgba(255, 20, 147, 0.4);
+            /* Animación suave cuando cambia de estado */
+            transition: all 0.3s ease;
+            text-transform: none;           /* No cambiar el texto a mayúsculas */
+            letter-spacing: 1px;            /* Espaciado entre letras */
+            margin-top: 10px;               /* Espacio arriba del botón */
+        }
+
+        /* === EFECTOS CUANDO PASAS EL MOUSE POR ENCIMA === */
+        .boton-continuar:hover {
+            /* Cambia el degradado a tonos más oscuros */
+            background: linear-gradient(135deg, #C71585, #FF1493);
+            /* Mueve el botón hacia arriba 3 píxeles */
+            transform: translateY(-3px);
+            /* Hace la sombra más intensa y grande */
+            box-shadow: 0 12px 35px rgba(255, 20, 147, 0.6);
+        }
+
+        /* === EFECTO CUANDO HACES CLIC === */
+        .boton-continuar:active {
+            /* Mueve el botón solo 1 píxel hacia arriba (menos que hover) */
+            transform: translateY(-1px);
+        }
+
+        /* Animación de flotación */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .mensaje-bienvenida {
+                font-size: 1.1rem;
+            }
+
+            .mensaje-perfil {
+                font-size: 1.1rem;
+            }
+
+            .boton-continuar {
+                padding: 18px 50px;
+                font-size: 1.4rem;
+            }
+
+            .ajolote-image {
+                width: 300px;
+            }
+
+            .close-button {
+                width: 50px;
+                height: 50px;
+                top: 20px;
+                right: 20px;
+            }
+
+            .close-button img {
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .mensaje-container {
+                padding: 20px 25px;
+                margin: 0 10px 30px 10px;
+            }
+
+            .mensaje-bienvenida {
+                font-size: 1rem;
+            }
+
+            .mensaje-perfil {
+                font-size: 1rem;
+            }
+
+            .boton-continuar {
+                padding: 15px 40px;
+                font-size: 1.2rem;
+            }
+
+            .ajolote-image {
+                width: 220px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Botón de cerrar -->
+    <div class="close-button" onclick="window.location.href='/iniciar_sesion'">
+        <img src="../static/images/images_saludo_chiquillo/regresar.png" alt="Regresar">
+    </div>
+
+    <!-- Contenedor principal -->
+    <div class="container">
+        <!-- Ajolote en patineta -->
+        <div class="ajolote-container">
+            <img src="../static/images/images_saludo_chiquillo/ajolote_patineta.png" 
+                 alt="Ajolote en patineta" 
+                 class="ajolote-image">
+        </div>
+
+        <!-- Mensaje de bienvenida -->
+        <div class="mensaje-container">
+            <div class="mensaje-bienvenida">¡Hola! Te doy la bienvenida a ¡Adiós al Silencio!</div>
+            <div class="mensaje-perfil">¡Vamos a divertirnos y aprender juntos!</div>
+        </div>
+
+        <!-- === BOTÓN PRINCIPAL DE CONTINUAR === -->
+        <!-- 
+        onclick: Define qué pasa cuando alguien hace clic
+        1. reproducirSonidoBoton() - Reproduce el sonido "do.mp3"
+        2. setTimeout() - Espera 300 milisegundos (para que se escuche el sonido)
+        3. window.location.href - Cambia a la siguiente página
+        -->
+        <button class="boton-continuar" onclick="reproducirSonidoBoton(); setTimeout(function() { window.location.href='/presentacion_lucas'; }, 300);">
+            CONTINUAR
+        </button>
+    </div>
+
+    <!-- === ELEMENTO DE AUDIO PARA EL SALUDO === -->
+    <!-- Este audio se reproduce automáticamente cuando se carga la página -->
+    <audio id="audioSaludo" preload="auto">
+        <!-- Especificamos la ruta del archivo de audio -->
+        <source src="../static/audio/audio_saludo_chiquillo/sintetizador_saludo.mp3" type="audio/mpeg">
+        <!-- Mensaje para navegadores que no soportan audio -->
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
+    <!-- === ELEMENTO DE AUDIO PARA EL BOTÓN === -->
+    <!-- Este audio se reproduce cuando el usuario hace clic en "CONTINUAR" -->
+    <audio id="audioBoton" preload="auto">
+        <!-- Usamos el sonido "do.mp3" para este botón -->
+        <source src="../static/audio/audio_botones/do.mp3" type="audio/mpeg">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
+    <script>
+        // FUNCIÓN PARA REPRODUCIR SONIDO DEL BOTÓN
+        // Esta función se ejecuta cuando el usuario hace clic en "CONTINUAR"
+        function reproducirSonidoBoton() {
+            // Buscamos el elemento de audio en la página
+            const audioBoton = document.getElementById('audioBoton');
+            if (audioBoton) {
+                // Configuramos el volumen (0.8 = 80% del volumen máximo)
+                audioBoton.volume = 0.8;
+                // Reiniciamos el audio desde el principio por si ya se había reproducido
+                audioBoton.currentTime = 0;
+                // Intentamos reproducir el sonido
+                audioBoton.play().catch(function(error) {
+                    // Si hay un error, lo mostramos en la consola del navegador
+                    console.log('Error al reproducir sonido del botón:', error);
+                });
+            }
+        }
+
+        // ANIMACIÓN AL CARGAR LA PÁGINA
+        // Esta función se ejecuta automáticamente cuando la página termina de cargar
+        window.addEventListener('load', function() {
+            // Hacemos que la página aparezca gradualmente (efecto fade-in)
+            document.body.style.opacity = '0';  // Empezamos invisible
+            document.body.style.transition = 'opacity 0.5s ease';  // Configuramos la transición
+            
+            // REPRODUCIR AUDIO DE SALUDO AUTOMÁTICAMENTE
+            const audioSaludo = document.getElementById('audioSaludo');
+            if (audioSaludo) {
+                // Configuramos un volumen moderado para el saludo
+                audioSaludo.volume = 0.7;
+                
+                // Intentamos reproducir el audio de bienvenida
+                audioSaludo.play().catch(function(error) {
+                    console.log('No se pudo reproducir el audio automáticamente:', error);
+                    // NOTA: Los navegadores modernos bloquean la reproducción automática
+                    // El audio se reproducirá cuando el usuario interactúe con la página
+                });
+            }
+            
+            // Después de 100 milisegundos, hacemos visible la página
+            setTimeout(function() {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+
+        // SOLUCIÓN PARA NAVEGADORES QUE BLOQUEAN AUDIO AUTOMÁTICO
+        // Si el audio no se reproduce solo, se activará con el primer clic del usuario
+        document.addEventListener('click', function() {
+            const audioSaludo = document.getElementById('audioSaludo');
+            // Solo reproducimos si el audio está pausado
+            if (audioSaludo && audioSaludo.paused) {
+                audioSaludo.play().catch(function(error) {
+                    console.log('Error al reproducir audio:', error);
+                });
+            }
+        }, { once: true }); // { once: true } significa que esto solo pasa una vez
+    </script>
+</body>
+</html>

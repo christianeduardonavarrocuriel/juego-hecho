@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Adios al Silencio</title>
+    
+    <style>
+        /* Estilo básico para todos los elementos */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Configuración del cuerpo de la página */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(180deg, #00BFFF 0%, #1E90FF 50%, #00BFFF 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Contenedor principal */
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            gap: 80px;
+        }
+
+        /* Sección del ajolote */
+        .ajolote-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-left: 0;
+            padding-right: 60px;
+            margin-left: -60px;
+            gap: 30px;
+        }
+
+        .ajolote-character {
+            width: 550px;
+            height: 550px;
+            animation: float 3s ease-in-out infinite;
+            margin: 0;
+        }
+
+        .ajolote-character img {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
+        }
+
+        /* Sección del formulario */
+        .form-section {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        /* Botón de cerrar */
+        .close-button {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-button:hover {
+            transform: scale(1.1);
+        }
+
+        .close-button img {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+            transition: all 0.3s ease;
+        }
+
+        .close-button:hover img {
+            filter: drop-shadow(0 6px 15px rgba(0, 0, 0, 0.5));
+        }
+
+        /* Título del formulario */
+        .form-title {
+            color: white;
+            font-size: 2.8rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.8s ease-out;
+        }
+
+        /* Contenedor del formulario */
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            animation: slideUp 0.8s ease-out 0.2s both;
+        }
+
+        /* Grupos de campos */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-input {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-input:focus {
+            background: white;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .form-input::placeholder {
+            color: #999;
+            font-style: italic;
+        }
+
+        /* Enlace para registrarse */
+        .register-link {
+            text-align: center;
+            margin: 5px 0 0 0;
+        }
+
+        .register-link a {
+            color: white;
+            font-size: 1rem;
+            text-decoration: underline;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            font-weight: normal;
+        }
+
+        .register-link a:hover {
+            color: #E0F6FF;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Botón de envío */
+        .submit-button {
+            background: linear-gradient(135deg, #FF1493, #FF69B4);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+            box-shadow: 0 6px 20px rgba(255, 20, 147, 0.4);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .submit-button:hover {
+            background: linear-gradient(135deg, #C71585, #FF1493);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 20, 147, 0.6);
+        }
+
+        .submit-button:active {
+            transform: translateY(-1px);
+        }
+
+        /* Botón de administrador */
+        .admin-button {
+            background: linear-gradient(135deg, #4169E1, #6495ED);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(65, 105, 225, 0.4);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .admin-button:hover {
+            background: linear-gradient(135deg, #1E3A8A, #4169E1);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(65, 105, 225, 0.6);
+        }
+
+        .admin-button:active {
+            transform: translateY(-1px);
+        }
+
+        /* Animaciones */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Estilos para el sistema de contraseña con animales */
+        .password-display {
+            min-height: 60px;
+            padding: 10px 15px;
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .password-display:empty::before {
+            content: "Haz clic en los animales para crear tu contraseña";
+            color: rgba(255, 255, 255, 0.7);
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        .password-animal {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            animation: animalPop 0.3s ease-out;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .password-animal:hover {
+            transform: scale(1.1);
+            border-color: #ff6b6b;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+        }
+
+        @keyframes animalPop {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .shape-controls {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .shape-btn {
+            width: 45px;
+            height: 45px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .shape-btn.animal img {
+            width: 35px;
+            height: 35px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .shape-btn:hover {
+            transform: translateY(-2px) scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .shape-btn:active {
+            transform: translateY(-1px) scale(1.05);
+        }
+
+        .clear-btn {
+            grid-column: span 4;
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(135deg, #ff6b6b, #ff5252);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .clear-btn:hover {
+            background: linear-gradient(135deg, #ff5252, #f44336);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Botón de cerrar -->
+    <div class="close-button" onclick="window.location.href='/'">
+        <img src="../static/images/images_iniciar_sesion/regresar.png" alt="Regresar">
+    </div>
+    
+    <!-- Contenedor principal -->
+    <div class="container">
+        <!-- Sección del ajolote -->
+        <div class="ajolote-section">
+            <!-- Botón para iniciar sesión como administrador -->
+            <button type="button" class="admin-button" onclick="window.location.href='/inicio_administrador'">
+                Iniciar Sesión de Administrador
+            </button>
+            
+            <div class="ajolote-character">
+                <img src="../static/images/images_iniciar_sesion/ajolote_astronauta.png" alt="Ajolote Astronauta">
+            </div>
+        </div>
+
+        <!-- Sección del formulario -->
+        <div class="form-section">
+            <h1 class="form-title">Iniciar Sesión</h1>
+            
+            <form class="form-container" action="/iniciar_sesion" method="POST">
+                <div class="form-group">
+                    <label class="form-label" for="nombre">Nombre de Niño:</label>
+                    <input 
+                        type="text" 
+                        id="nombre" 
+                        name="nombre" 
+                        class="form-input" 
+                        placeholder="Nombre del niño"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="primer-apellido">Primer Apellido y Segundo Apellido:</label>
+                    <input 
+                        type="text" 
+                        id="primer-apellido-y-segundo-apellido" 
+                        name="primer_apellido-y-segundo-apellido" 
+                        class="form-input" 
+                        placeholder="Primer apellido y segundo apellido del niño"
+                        required
+                    >
+                </div>
+
+
+                <div class="form-group">
+                    <!-- DEBUG: Archivo actualizado correctamente -->
+                    <label class="form-label" for="contraseña">Selecciona tu contraseña con animales:</label>
+                    <div class="password-display" id="password-display" style="position: relative;">
+                        <!-- Aquí se mostrarán las imágenes de animales seleccionados -->
+                    </div>
+                    <input 
+                        type="hidden" 
+                        id="contraseña" 
+                        name="contraseña" 
+                        required
+                    >
+                    <!-- Controles de animales -->
+                    <div class="shape-controls">
+                        <button type="button" class="shape-btn animal" data-shape="ajolote">
+                            <img src="../static/images/images_emojis/ajolote_cara.png" alt="Ajolote">
+                        </button>
+                        <button type="button" class="shape-btn animal" data-shape="borrego">
+                            <img src="../static/images/images_emojis/borrego_cara.png" alt="Borrego">
+                        </button>
+                        <button type="button" class="shape-btn animal" data-shape="oso">
+                            <img src="../static/images/images_emojis/oso.png" alt="Oso">
+                        </button>
+                        <button type="button" class="shape-btn animal" data-shape="perro">
+                            <img src="../static/images/images_emojis/perro.png" alt="Perro">
+                        </button>
+                        <button type="button" class="clear-btn">Borrar</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-button">Iniciar Sesión</button>
+
+                <!-- Enlace para registrarse -->
+                <div class="register-link">
+                    <a href="/registrar_tutor">¿No tienes cuenta? Regístrate aquí</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Sistema de contraseña visual integrado en el formulario
+        document.addEventListener('click', function(e) {
+            // Manejar clics en botones de animales (tanto botón como imagen)
+            const animalBtn = e.target.closest('.shape-btn.animal');
+            if (animalBtn) {
+                e.preventDefault();
+                const animalName = animalBtn.getAttribute('data-shape');
+                const animalImgSrc = animalBtn.querySelector('img').src;
+                const formGroup = animalBtn.closest('.form-group');
+                const passwordDisplay = formGroup.querySelector('.password-display');
+                const hiddenInput = formGroup.querySelector('input[type="hidden"]');
+                
+                // Limitar a máximo 6 animales
+                if (passwordDisplay.children.length < 6) {
+                    // Ocultar el placeholder si existe antes de agregar el animal
+                    const placeholder = passwordDisplay.querySelector('#placeholder-animales');
+                    if (placeholder) {
+                        placeholder.style.display = 'none';
+                    }
+                    
+                    // Crear nueva imagen del animal
+                    const animalImg = document.createElement('img');
+                    animalImg.src = animalImgSrc;
+                    animalImg.className = 'password-animal';
+                    animalImg.alt = animalName;
+                    animalImg.title = animalName;
+                    
+                    // Añadir la imagen al contenedor visual
+                    passwordDisplay.appendChild(animalImg);
+                    
+                    // Actualizar el campo oculto con los nombres de los animales
+                    const currentValue = hiddenInput.value;
+                    hiddenInput.value = currentValue ? currentValue + ',' + animalName : animalName;
+                }
+                
+                // Efecto visual en el botón
+                animalBtn.style.transform = 'translateY(-3px) scale(1.2)';
+                setTimeout(function() {
+                    animalBtn.style.transform = 'translateY(-3px) scale(1.1)';
+                }, 200);
+            }
+            
+            // Manejar clics en botones de borrar
+            if (e.target.classList.contains('clear-btn')) {
+                e.preventDefault();
+                const formGroup = e.target.closest('.form-group');
+                const passwordDisplay = formGroup.querySelector('.password-display');
+                const hiddenInput = formGroup.querySelector('input[type="hidden"]');
+                
+                // Limpiar el contenedor visual y el campo oculto
+                passwordDisplay.innerHTML = '<span id="placeholder-animales" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #999; pointer-events: none; font-size: 1.1rem;">Máximo 6 animales</span>';
+                hiddenInput.value = '';
+            }
+            
+            // Manejar clics en las imágenes de animales para eliminarlas individualmente
+            if (e.target.classList.contains('password-animal')) {
+                e.preventDefault();
+                const formGroup = e.target.closest('.form-group');
+                const passwordDisplay = formGroup.querySelector('.password-display');
+                const hiddenInput = formGroup.querySelector('input[type="hidden"]');
+                const animalToRemove = e.target.alt;
+                
+                // Eliminar la imagen del contenedor visual
+                e.target.remove();
+                
+                // Actualizar el campo oculto removiendo el animal
+                const animals = hiddenInput.value.split(',').filter(animal => animal !== animalToRemove);
+                hiddenInput.value = animals.join(',');
+                
+                // Mostrar el placeholder si no quedan animales
+                if (animals.length === 0) {
+                    passwordDisplay.innerHTML = '<span id="placeholder-animales" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #999; pointer-events: none; font-size: 1.1rem;">Máximo 6 animales</span>';
+                }
+            }
+        });
+
+        // Función para manejar el envío del formulario
+        document.querySelector('.form-container').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Obtener los datos del formulario
+            const nombre = document.getElementById('nombre').value;
+            const apellidos = document.getElementById('primer-apellido-y-segundo-apellido').value;
+            const contraseña = document.getElementById('contraseña').value;
+            
+            // Validar que la contraseña tenga exactamente 6 animales
+            const animalesSeleccionados = contraseña ? contraseña.split(',').filter(animal => animal.trim() !== '') : [];
+            
+            if (!nombre || !apellidos) {
+                alert('Por favor, completa todos los campos.');
+                return;
+            }
+            
+            if (animalesSeleccionados.length !== 6) {
+                alert('Tu contraseña debe tener exactamente 6 animales.');
+                return;
+            }
+            
+            // Si todo está correcto, proceder con el inicio de sesión
+            const datosNino = {
+                nombre: nombre,
+                apellidos: apellidos,
+                contraseña: contraseña,
+                fechaAcceso: new Date().toISOString()
+            };
+            localStorage.setItem('ninoActual', JSON.stringify(datosNino));
+            
+            // Redirigir al saludo del chiquillo
+            window.location.href = '/saludo_chiquillo';
+        });
+
+    </script>
+</body>
+</html>

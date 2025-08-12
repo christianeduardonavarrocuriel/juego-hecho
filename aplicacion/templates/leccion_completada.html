@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lección Completada - Adiós al Silencio</title>
+    <style>
+        /* === RESET: Quita espacios predeterminados del navegador === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* === CUERPO DE LA PÁGINA === */
+        body {
+            font-family: Arial, sans-serif;
+            /* Mismo fondo azul degradado para mantener consistencia visual */
+            background: linear-gradient(180deg, #00BFFF 0%, #1E90FF 50%, #00BFFF 100%);
+            height: 100vh;           /* Altura fija - NO scroll */
+            width: 100vw;            /* Ancho fijo */
+            display: flex;           /* Flexbox para centrar todo */
+            flex-direction: column;  /* Elementos apilados verticalmente */
+            align-items: center;     /* Centrado horizontal */
+            justify-content: center; /* Centrado vertical */
+            padding: 20px;          /* Espacio interno */
+            overflow: hidden;       /* SIN SCROLL */
+        }
+
+        /* Contenedor principal */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        /* Mensaje de felicitación */
+        .mensaje {
+            color: white;
+            font-size: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            line-height: 1.4;
+            margin-bottom: 30px;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Botón de continuar */
+        .boton-continuar {
+            background: linear-gradient(135deg, #FF1493, #FF69B4);
+            color: white;
+            border: none;
+            padding: 20px 60px;
+            border-radius: 50px;
+            font-size: 1.6rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255, 20, 147, 0.4);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 30px;
+        }
+
+        .boton-continuar:hover {
+            background: linear-gradient(135deg, #C71585, #FF1493);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 20, 147, 0.6);
+        }
+
+        .boton-continuar:active {
+            transform: translateY(-1px);
+        }
+
+        /* Ajolote */
+        .ajolote-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .ajolote-image {
+            width: 420px;
+            height: auto;
+            max-width: 100%;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .mensaje {
+                font-size: 1.5rem;
+            }
+
+            .boton-continuar {
+                padding: 18px 50px;
+                font-size: 1.4rem;
+            }
+
+            .ajolote-image {
+                width: 280px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .mensaje {
+                font-size: 1.2rem;
+                margin-bottom: 20px;
+            }
+
+            .boton-continuar {
+                padding: 15px 40px;
+                font-size: 1.2rem;
+                margin-bottom: 20px;
+            }
+
+            .ajolote-image {
+                width: 220px;
+            }
+
+            body {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Contenedor principal -->
+    <div class="container">
+        <!-- Mensaje de felicitación -->
+        <div class="mensaje">
+            ¡Perfecto! En la Lengua de Señas Mexicana es importante conocer las emociones que siente una persona a través de sus expresiones. ¡Muy bien!
+        </div>
+
+        <!-- Botón para continuar -->
+        <button class="boton-continuar" onclick="continuarAventura()">
+            Iniciar Aventura
+        </button>
+
+        <!-- Ajolote -->
+        <div class="ajolote-container">
+            <img src="../static/images/images_leccion00/ajolote_dab.png" 
+                 alt="Ajolote Dab" 
+                 class="ajolote-image">
+        </div>
+    </div>
+
+    <script>
+        function continuarAventura() {
+            // Marcar la introducción como completada y desbloquear la siguiente lección
+            completarIntroduccion();
+            // Redirigir a lecciones
+            window.location.href = '/lecciones';
+        }
+
+        // Función para marcar la introducción como completada
+        function completarIntroduccion() {
+            // Cargar progreso actual
+            let progreso = localStorage.getItem('progreso_lecciones');
+            if (progreso) {
+                progreso = JSON.parse(progreso);
+            } else {
+                // Estado inicial si no existe
+                progreso = {
+                    'introduccion': 'disponible',
+                    'coordinacion': 'bloqueada',
+                    'abecedario': 'bloqueada',
+                    'numeros': 'bloqueada'
+                };
+            }
+
+            // Marcar introducción como completada
+            progreso['introduccion'] = 'completada';
+            
+            // Desbloquear la siguiente lección (coordinación)
+            if (progreso['coordinacion'] === 'bloqueada') {
+                progreso['coordinacion'] = 'disponible';
+            }
+
+            // Guardar progreso
+            localStorage.setItem('progreso_lecciones', JSON.stringify(progreso));
+        }
+
+        // === ANIMACIÓN DE ENTRADA ===
+        // Efecto fade-in consistente con todas las páginas
+        window.addEventListener('load', function() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+            
+            setTimeout(function() {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

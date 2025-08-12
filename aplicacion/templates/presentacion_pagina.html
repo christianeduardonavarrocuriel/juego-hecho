@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- TÍTULO: Esta es la página final antes de llegar a las lecciones -->
+    <title>Presentación d        window.addEventListener('load', function() {
+            // Mostrar página inmediatamente
+            document.body.style.opacity = '1';
+        });na - Adios al Silencio</title>
+    <style>
+        /* === RESET: Quita espacios predeterminados del navegador === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* === CUERPO DE LA PÁGINA === */
+        body {
+            font-family: Arial, sans-serif;
+            /* Mismo fondo azul degradado para mantener consistencia visual */
+            background: linear-gradient(180deg, #00BFFF 0%, #1E90FF 50%, #00BFFF 100%);
+            min-height: 100vh;        /* Ocupa toda la altura de la pantalla */
+            display: flex;            /* Flexbox para centrar todo */
+            flex-direction: column;   /* Elementos apilados verticalmente */
+            align-items: center;      /* Centrado horizontal */
+            justify-content: center;  /* Centrado vertical */
+            padding: 20px;           /* Espacio interno */
+            position: relative;       /* Para el botón de cerrar */
+        }
+
+        /* === BOTÓN DE CERRAR === */
+        .close-button {
+            position: absolute;       /* Posición fija en la esquina */
+            top: 30px;               /* Distancia desde arriba */
+            right: 30px;             /* Distancia desde la derecha */
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-button:hover {
+            transform: scale(1.1);
+        }
+
+        .close-button img {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+            transition: all 0.3s ease;
+        }
+
+        .close-button:hover img {
+            filter: drop-shadow(0 6px 15px rgba(0, 0, 0, 0.5));
+        }
+
+        /* Contenedor principal */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        /* Ajolote */
+        .ajolote-container {
+            margin-bottom: 0px;
+            position: relative;
+            /* Eliminamos animación float para mejor rendimiento */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .ajolote-image {
+            width: 450px;
+            height: auto;
+            max-width: 100%;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+        }
+
+        /* Marco del mensaje */
+        .mensaje-container {
+            background: transparent;
+            border: none;
+            border-radius: 25px;
+            padding: 0px 15px;
+            margin-bottom: 5px;
+            box-shadow: none;
+        }
+
+        /* Mensaje de bienvenida */
+        .mensaje {
+            color: white;
+            font-size: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            line-height: 1.4;
+            margin-bottom: 5px;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Botón de continuar */
+        .boton-continuar {
+            background: linear-gradient(135deg, #FF1493, #FF69B4);
+            color: white;
+            border: none;
+            padding: 20px 60px;
+            border-radius: 50px;
+            font-size: 1.6rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255, 20, 147, 0.4);
+            transition: all 0.3s ease;
+            text-transform: none;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        .boton-continuar:hover {
+            background: linear-gradient(135deg, #C71585, #FF1493);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 20, 147, 0.6);
+        }
+
+        .boton-continuar:active {
+            transform: translateY(-1px);
+        }
+
+        /* Animación de flotación eliminada para mejor rendimiento
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+        */
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .mensaje {
+                font-size: 1.1rem;
+            }
+
+            .boton-continuar {
+                padding: 18px 50px;
+                font-size: 1.4rem;
+            }
+
+            .ajolote-image {
+                width: 300px;
+            }
+
+            .close-button {
+                width: 50px;
+                height: 50px;
+                top: 20px;
+                right: 20px;
+            }
+
+            .close-button img {
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .mensaje-container {
+                padding: 20px 25px;
+                margin: 0 10px 30px 10px;
+            }
+
+            .mensaje {
+                font-size: 1rem;
+            }
+
+            .boton-continuar {
+                padding: 15px 40px;
+                font-size: 1.2rem;
+            }
+
+            .ajolote-image {
+                width: 220px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Botón de cerrar -->
+    <div class="close-button" onclick="window.location.href='/iniciar_sesion'">
+        <img src="../static/images/images_saludo_chiquillo/regresar.png" alt="Regresar">
+    </div>
+
+    <!-- Contenedor principal -->
+    <div class="container">
+        <!-- Ajolote en patineta -->
+        <div class="ajolote-container">
+            <img src="../static/images/images_saludo_chiquillo/ajolote_ramen.png" 
+                 alt="Ajolote en patineta" 
+                 class="ajolote-image">
+        </div>
+
+        <!-- Mensaje de bienvenida -->
+        <div class="mensaje-container">
+            <div class="mensaje">Antes de comenzar, viajaremos a las lecciones que se tomarán</div>
+        </div>
+
+        <!-- Botón para continuar -->
+        <button class="boton-continuar" onclick="reproducirSonidoBoton(); setTimeout(function() { window.location.href='/lecciones'; }, 300);">
+            CONTINUAR
+        </button>
+    </div>
+
+    <!-- Audio para botón -->
+    <!-- === AUDIO DEL BOTÓN FINAL === -->
+    <!-- Este botón reproduce "MI" - la tercera y última nota de nuestra secuencia musical -->
+    <!-- Secuencia completa: DO → RE → MI (escala musical ascendente) -->
+    <audio id="audioBoton" preload="auto">
+        <source src="../static/audio/audio_botones/mi.mp3" type="audio/mpeg">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
+    <script>
+        // === FUNCIÓN PARA EL ÚLTIMO SONIDO DE LA SECUENCIA ===
+        // Reproduce la nota "MI" cuando el usuario hace clic en "CONTINUAR"
+        function reproducirSonidoBoton() {
+            const audioBoton = document.getElementById('audioBoton');
+            if (audioBoton) {
+                audioBoton.volume = 0.8;        // Mismo volumen que páginas anteriores
+                audioBoton.currentTime = 0;     // Reiniciar desde el inicio
+                // Reproducir la nota "MI" - culminación de la secuencia musical
+                audioBoton.play().catch(function(error) {
+                    console.log('Error al reproducir sonido del botón:', error);
+                });
+            }
+        }
+
+        // === ANIMACIÓN DE ENTRADA ===
+        // Efecto fade-in consistente con todas las páginas
+        window.addEventListener('load', function() {
+            document.body.style.opacity = '0';              // Invisible al inicio
+            document.body.style.transition = 'opacity 0.5s ease';  // Transición suave
+            
+            // Hacer visible la página después de 100ms
+            setTimeout(function() {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

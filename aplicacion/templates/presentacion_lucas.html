@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- TÍTULO DE LA PÁGINA - Aparece en la pestaña del navegador -->
+    <title>Presentación Lucas - Adios al Silencio</title>
+    <style>
+        /* === RESET CSS - Elimina márgenes y espacios por defecto === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;  /* Hace que el padding no afecte el tamaño total */
+        }
+
+        /* === ESTILO DEL CUERPO DE LA PÁGINA === */
+        body {
+            font-family: Arial, sans-serif;           /* Fuente para toda la página */
+            /* Fondo degradado azul (igual que página anterior para consistencia) */
+            background: linear-gradient(180deg, #00BFFF 0%, #1E90FF 50%, #00BFFF 100%);
+            min-height: 100vh;                        /* Ocupa toda la altura de la pantalla */
+            display: flex;                            /* Usar flexbox para centrar contenido */
+            flex-direction: column;                   /* Elementos en columna (uno debajo del otro) */
+            align-items: center;                      /* Centrar horizontalmente */
+            justify-content: center;                  /* Centrar verticalmente */
+            padding: 20px;                           /* Espacio interno */
+            position: relative;                       /* Para posicionar el botón de cerrar */
+        }
+
+        /* === BOTÓN DE CERRAR (X) EN LA ESQUINA === */
+        .close-button {
+            position: absolute;     /* Se posiciona independiente del resto */
+            top: 30px;             /* 30px desde arriba */
+            right: 30px;           /* 30px desde la derecha */
+            width: 60px;           /* Ancho del botón */
+            height: 60px;          /* Alto del botón */
+            cursor: pointer;       /* Muestra manita al pasar mouse */
+            transition: all 0.3s ease;  /* Animación suave para cambios */
+            display: flex;         /* Para centrar la imagen */
+            align-items: center;   /* Centra la imagen verticalmente */
+            justify-content: center;  /* Centra la imagen horizontalmente */
+        }
+
+        /* === EFECTO HOVER DEL BOTÓN DE CERRAR === */
+        .close-button:hover {
+            transform: scale(1.1);  /* Se agranda 10% al pasar el mouse */
+        }
+
+        .close-button img {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+            transition: all 0.3s ease;
+        }
+
+        .close-button:hover img {
+            filter: drop-shadow(0 6px 15px rgba(0, 0, 0, 0.5));
+        }
+
+        /* Contenedor principal */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        /* Ajolote */
+        .ajolote-container {
+            margin-bottom: 0px;
+            position: relative;
+            animation: float 3s ease-in-out infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .ajolote-image {
+            width: 450px;
+            height: auto;
+            max-width: 100%;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+        }
+
+        /* Marco del mensaje */
+        .mensaje-container {
+            background: transparent;
+            border: none;
+            border-radius: 25px;
+            padding: 0px 15px;
+            margin-bottom: 5px;
+            box-shadow: none;
+        }
+
+        /* Mensaje de bienvenida */
+        .mensaje-uno {
+            color: white;
+            font-size: 1.6rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            line-height: 1.4;
+            margin-bottom: 5px;
+            font-family: Arial, sans-serif;
+        }
+
+        .mensaje-dos {
+            color: white;
+            font-size: 1.6rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            line-height: 1.4;
+            margin-bottom: 5px;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Botón de continuar */
+        .boton-continuar {
+            background: linear-gradient(135deg, #FF1493, #FF69B4);
+            color: white;
+            border: none;
+            padding: 20px 60px;
+            border-radius: 50px;
+            font-size: 1.6rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255, 20, 147, 0.4);
+            transition: all 0.3s ease;
+            text-transform: none;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        .boton-continuar:hover {
+            background: linear-gradient(135deg, #C71585, #FF1493);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 20, 147, 0.6);
+        }
+
+        .boton-continuar:active {
+            transform: translateY(-1px);
+        }
+
+        /* Animación de flotación */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .mensaje-uno{
+                font-size: 1.1rem;
+            }
+
+            .mensaje-dos {
+                font-size: 1.1rem;
+            }
+
+            .boton-continuar {
+                padding: 18px 50px;
+                font-size: 1.4rem;
+            }
+
+            .ajolote-image {
+                width: 300px;
+            }
+
+            .close-button {
+                width: 50px;
+                height: 50px;
+                top: 20px;
+                right: 20px;
+            }
+
+            .close-button img {
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .mensaje-container {
+                padding: 20px 25px;
+                margin: 0 10px 30px 10px;
+            }
+
+            .mensaje-uno {
+                font-size: 1rem;
+            }
+
+            .mensaje-dos {
+                font-size: 1rem;
+            }
+
+            .boton-continuar {
+                padding: 15px 40px;
+                font-size: 1.2rem;
+            }
+
+            .ajolote-image {
+                width: 220px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Botón de cerrar -->
+    <div class="close-button" onclick="window.location.href='/iniciar_sesion'">
+        <img src="../static/images/images_saludo_chiquillo/regresar.png" alt="Regresar">
+    </div>
+
+    <!-- Contenedor principal -->
+    <div class="container">
+        <!-- Ajolote en patineta -->
+        <div class="ajolote-container">
+            <img src="../static/images/images_saludo_chiquillo/ajolote_bebida.png" 
+                 alt="Ajolote en patineta" 
+                 class="ajolote-image">
+        </div>
+
+        <!-- Mensaje de bienvenida -->
+        <div class="mensaje-container">
+            <div class="mensaje-uno">Mi nombre es Lucas, y hoy aprenderás sobre.....</div>
+            <div class="mensaje-dos">¡La gran Lengua de Señas Mexicana! (LSM), aunque eso si, siéntete libre de aprender y relájate,
+            ¡te aseguro que te vas a divertir!</div>
+        </div>
+
+        <!-- Botón para continuar -->
+        <button class="boton-continuar" onclick="reproducirSonidoBoton(); setTimeout(function() { window.location.href='/presentacion_pagina'; }, 300);">
+            CONTINUAR
+        </button>
+    </div>
+
+    <!-- Audio para botón -->
+    <!-- === AUDIO PARA EL BOTÓN DE CONTINUAR === -->
+    <!-- Este botón reproduce la nota musical "RE" (segunda nota de la escala) -->
+    <audio id="audioBoton" preload="auto">
+        <source src="../static/audio/audio_botones/re.mp3" type="audio/mpeg">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
+    <script>
+        // === FUNCIÓN PARA REPRODUCIR SONIDO DEL BOTÓN ===
+        // Esta función se ejecuta cuando el usuario hace clic en "CONTINUAR"
+        function reproducirSonidoBoton() {
+            // Obtenemos el elemento de audio del botón
+            const audioBoton = document.getElementById('audioBoton');
+            if (audioBoton) {
+                audioBoton.volume = 0.8;        // Volumen al 80%
+                audioBoton.currentTime = 0;     // Empezar desde el inicio
+                // Intentar reproducir el sonido "RE"
+                audioBoton.play().catch(function(error) {
+                    console.log('Error al reproducir sonido del botón:', error);
+                });
+            }
+        }
+
+        // === ANIMACIÓN AL CARGAR LA PÁGINA ===
+        // Mostrar página inmediatamente para mejor rendimiento
+        window.addEventListener('load', function() {
+            document.body.style.opacity = '1';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Perfil - Adios al Silencio</title>
+    <style>
+        /* Estilo básico para todos los elementos */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Configuración del cuerpo de la página */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(180deg, #00BFFF 0%, #1E90FF 50%, #00BFFF 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Contenedor principal */
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            gap: 60px;
+        }
+
+        /* Sección del ajolote */
+        .ajolote-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-left: 0;
+            padding-right: 80px;
+            margin-left: -80px;
+        }
+
+        .ajolote-character {
+            width: 600px;
+            height: 600px;
+            animation: float 3s ease-in-out infinite;
+            margin: 0;
+        }
+
+        .ajolote-character img {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
+        }
+
+        /* Acciones debajo del ajolote */
+        .ajolote-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: -30px;
+            width: 100%;
+        }
+
+        /* Sección del formulario */
+        .form-section {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        /* Botón de cerrar */
+        .close-button {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-button:hover {
+            transform: scale(1.1);
+        }
+
+        .close-button img {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+            transition: all 0.3s ease;
+        }
+
+        .close-button:hover img {
+            filter: drop-shadow(0 6px 15px rgba(0, 0, 0, 0.5));
+        }
+
+        /* Título del formulario */
+        .form-title {
+            color: white;
+            font-size: 3.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.8s ease-out;
+        }
+
+        /* Contenedor del formulario */
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            animation: slideUp 0.8s ease-out 0.2s both;
+        }
+
+        /* Grupos de campos */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            color: white;
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-input {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-input:focus {
+            background: white;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .form-input::placeholder {
+            color: #999;
+            font-style: italic;
+        }
+
+        /* Botón de envío */
+        .submit-button {
+            background: linear-gradient(135deg, #FF1493, #FF69B4);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 6px 20px rgba(255, 20, 147, 0.4);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .submit-button:hover {
+            background: linear-gradient(135deg, #C71585, #FF1493);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 20, 147, 0.6);
+        }
+
+        .submit-button:active {
+            transform: translateY(-1px);
+        }
+
+        /* Animaciones */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Estilos responsivos */
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+                gap: 40px;
+            }
+
+            .ajolote-section {
+                justify-content: center;
+                padding-left: 0;
+                padding-right: 0;
+                margin-left: 0;
+            }
+
+            .ajolote-character {
+                width: 450px;
+                height: 450px;
+                margin: 0;
+            }
+
+            .ajolote-actions {
+                margin-top: -20px;
+            }
+
+            .form-title {
+                font-size: 2.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto;
+                min-height: 100vh;
+            }
+
+            .container {
+                padding: 40px 20px;
+                gap: 30px;
+            }
+
+            .ajolote-character {
+                width: 320px;
+                height: 320px;
+                margin-left: 0;
+            }
+
+            .form-title {
+                font-size: 2.2rem;
+                margin-bottom: 30px;
+            }
+
+            .form-input {
+                padding: 12px 18px;
+                font-size: 1rem;
+            }
+
+            .submit-button {
+                padding: 15px 35px;
+                font-size: 1.2rem;
+            }
+
+            .close-button {
+                width: 50px;
+                height: 50px;
+                top: 20px;
+                right: 20px;
+            }
+
+            .close-button img {
+                width: 100%;
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Botón de cerrar -->
+    <div class="close-button" onclick="window.location.href='/perfil_admin'">
+        <img src="../static/images/images_informacion_personal/regresar.png" alt="Regresar">
+    </div>
+    
+    <!-- Contenedor principal -->
+    <div class="container">
+        <!-- Sección del ajolote -->
+        <div class="ajolote-section">
+            <div class="ajolote-character">
+                <img src="../static/images/images_informacion_personal/ajolote_helado.png" alt="Ajolote">
+            </div>
+            
+            <!-- Botón debajo del ajolote -->
+            <div class="ajolote-actions">
+                <button type="submit" class="submit-button" form="editar-form">Guardar</button>
+            </div>
+        </div>
+
+        <!-- Sección del formulario -->
+        <div class="form-section">
+            <h1 class="form-title">Información Personal</h1>
+            
+            <form class="form-container" id="editar-form" action="/editar_perfil" method="POST">
+                <div class="form-group">
+                    <label class="form-label" for="nombre">Nombre Completo:</label>
+                    <input 
+                        type="text" 
+                        id="nombre" 
+                        name="nombre" 
+                        class="form-input" 
+                        placeholder="Escribe tu nombre completo"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="email">Email:</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        class="form-input" 
+                        placeholder="ejemplo@gmail.com"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="contraseña">Contraseña:</label>
+                    <div style="position: relative;">
+                        <input 
+                            type="password" 
+                            id="contraseña" 
+                            name="contraseña" 
+                            class="form-input" 
+                            style="width: 100%; padding: 15px 20px; border: none; border-radius: 50px; font-size: 1.1rem; background: rgba(255, 255, 255, 0.95); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);"
+                            placeholder=""
+                            required
+                        >
+                        <span id="placeholder-contraseña" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #999; pointer-events: none; font-size: 1.1rem;">Máximo 6 Caracteres</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="verificar">Verificar Contraseña:</label>
+                    <input 
+                        type="password" 
+                        id="verificar" 
+                        name="verificar" 
+                        class="form-input" 
+                        placeholder="Confirma tu contraseña"
+                        required
+                    >
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Función para cargar datos existentes del usuario
+        function cargarDatosExistentes() {
+            const datosTutor = JSON.parse(localStorage.getItem('datosTutor')) || {};
+            
+            if (datosTutor.nombre && datosTutor.apellidos) {
+                document.getElementById('nombre').value = datosTutor.nombre + ' ' + datosTutor.apellidos;
+            } else if (datosTutor.nombre) {
+                document.getElementById('nombre').value = datosTutor.nombre;
+            }
+            
+            if (datosTutor.email) {
+                document.getElementById('email').value = datosTutor.email;
+            }
+        }
+
+        // Función para manejar el envío del formulario
+        document.getElementById('editar-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Obtener los valores de las contraseñas
+            const contraseña = document.getElementById('contraseña').value;
+            const verificar = document.getElementById('verificar').value;
+            
+            // Validar que la contraseña tenga exactamente 6 caracteres
+            if (contraseña.length !== 6) {
+                alert('La contraseña debe tener exactamente 6 caracteres.');
+                return;
+            }
+            
+            // Validar que las contraseñas coincidan
+            if (contraseña !== verificar) {
+                alert('Las contraseñas no coinciden. Por favor, inténtalo de nuevo.');
+                return;
+            }
+            
+            // Separar nombre completo en nombre y apellidos
+            const nombreCompleto = document.getElementById('nombre').value.trim();
+            const partesNombre = nombreCompleto.split(' ');
+            const nombre = partesNombre[0] || '';
+            const apellidos = partesNombre.slice(1).join(' ') || '';
+            
+            // Recopilar datos actualizados
+            const datosActualizados = {
+                nombre: nombre,
+                apellidos: apellidos,
+                email: document.getElementById('email').value.trim(),
+                contraseña: contraseña,
+                fechaActualizacion: new Date().toISOString()
+            };
+            
+            // Conservar datos anteriores si existen
+            const datosTutorExistentes = JSON.parse(localStorage.getItem('datosTutor')) || {};
+            const datosFusionados = { ...datosTutorExistentes, ...datosActualizados };
+            
+            // Guardar datos actualizados
+            localStorage.setItem('datosTutor', JSON.stringify(datosFusionados));
+            
+            console.log('Perfil actualizado:', datosFusionados);
+            alert('Perfil actualizado correctamente');
+            
+            // Redirigir de vuelta al perfil
+            window.location.href = '/perfil_admin';
+        });
+
+        // Manejar el placeholder de contraseña
+        const contraseñaInput = document.getElementById('contraseña');
+        const placeholderContraseña = document.getElementById('placeholder-contraseña');
+
+        contraseñaInput.addEventListener('input', function() {
+            if (this.value.length > 0) {
+                placeholderContraseña.style.display = 'none';
+            } else {
+                placeholderContraseña.style.display = 'block';
+            }
+        });
+
+        contraseñaInput.addEventListener('focus', function() {
+            if (this.value.length > 0) {
+                placeholderContraseña.style.display = 'none';
+            }
+        });
+
+        contraseñaInput.addEventListener('blur', function() {
+            if (this.value.length === 0) {
+                placeholderContraseña.style.display = 'block';
+            }
+        });
+
+        // Animación al cargar la página
+        window.addEventListener('load', function() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+            
+            // Cargar datos existentes
+            cargarDatosExistentes();
+            
+            setTimeout(function() {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

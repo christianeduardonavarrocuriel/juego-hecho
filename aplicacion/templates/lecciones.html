@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- TÍTULO: Página principal de lecciones interactivas -->
+    <title>Lecciones - Adios al Silencio</title>
+    <style>
+        /* === RESET CSS UNIVERSAL === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* === DISEÑO DE LA PÁGINA PRINCIPAL === */
+        body {
+            font-family: Arial, sans-serif;
+            /* Mismo fondo azul degradado para consistencia */
+            background: linear-gradient(180deg, #00BFFF 0%, #1E90FF 50%, #00BFFF 100%);
+            min-height: 100vh;                /* Altura completa de pantalla */
+            display: flex;                    /* Flexbox para organizar elementos */
+            flex-direction: column;           /* Elementos en columna */
+            align-items: center;              /* Centrar horizontalmente */
+            justify-content: flex-start;     /* Comenzar desde arriba (no centrar) */
+            padding: 20px;                   /* Espacio interno */
+            position: relative;               /* Para el botón de cerrar */
+            overflow-x: hidden;              /* Evita scroll horizontal */
+        }
+
+        /* === BOTÓN DE CERRAR (REGRESAR) === */
+        .close-button {
+            position: absolute;       /* Posición fija en esquina */
+            top: 30px;               /* 30px desde arriba */
+            right: 30px;             /* 30px desde la derecha */
+            width: 60px;             /* Tamaño del botón */
+            height: 60px;
+            cursor: pointer;         /* Cursor de mano */
+            transition: all 0.3s ease;  /* Animación suave */
+            display: flex;           /* Para centrar la imagen */
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* === EFECTO HOVER DEL BOTÓN === */
+        .close-button:hover {
+            transform: scale(1.1);   /* Se agranda al pasar el mouse */
+        }
+
+        .close-button img {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+            transition: all 0.3s ease;
+        }
+
+        .close-button:hover img {
+            filter: drop-shadow(0 6px 15px rgba(0, 0, 0, 0.5));
+        }
+
+        /* Título principal */
+        .titulo-principal {
+            color: white;
+            font-size: 3.5rem;
+            font-weight: bold;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            margin-bottom: 40px;
+            margin-top: 20px;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        /* === CONTENEDOR DE LAS LECCIONES === */
+        /* Usa CSS Grid para organizar las tarjetas de lecciones automáticamente */
+        .lecciones-container {
+            display: grid;                /* Sistema de grilla */
+            /* Crea columnas automáticamente: mínimo 240px, máximo igual distribución */
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;                    /* Espacio entre tarjetas */
+            max-width: 1200px;           /* Ancho máximo del contenedor */
+            width: 100%;                 /* Usar todo el ancho disponible */
+            padding: 0 20px;             /* Espacio a los lados */
+        }
+
+        /* === TARJETA INDIVIDUAL DE LECCIÓN === */
+        .leccion-card {
+            background: transparent;      /* Fondo transparente */
+            border-radius: 20px;         /* Bordes redondeados */
+            padding: 20px;               /* Espacio interno */
+            /* Sombra que da efecto de profundidad */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;   /* Animación suave para cambios */
+            cursor: pointer;             /* Muestra que es clickeable */
+            position: relative;          /* Para posicionar elementos internos */
+            min-height: 320px;          /* Altura mínima */
+            display: flex;              /* Flexbox para organizar contenido */
+            flex-direction: column;     /* Elementos en columna */
+            align-items: center;        /* Centrar horizontalmente */
+            text-align: center;         /* Texto centrado */
+        }
+
+        /* === EFECTO HOVER DE LAS TARJETAS === */
+        .leccion-card:hover {
+            transform: translateY(-5px);  /* Se eleva 5px */
+            /* Sombra más intensa al hacer hover */
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        /* === ESTADOS DE LAS LECCIONES === */
+        
+        /* LECCIÓN DISPONIBLE: Se puede jugar */
+        .leccion-card.disponible {
+            background: transparent;
+            border: 3px solid #00BFFF;   /* Borde azul */
+        }
+
+        /* LECCIÓN COMPLETADA: Ya se terminó, se puede repetir */
+        .leccion-card.completada {
+            background: transparent;
+            border: 3px solid #32CD32;   /* Borde verde */
+        }
+
+        /* LECCIÓN BLOQUEADA: No se puede acceder aún */
+        .leccion-card.bloqueada {
+            background: transparent;
+            border: 3px solid #888;      /* Borde gris */
+            cursor: not-allowed;         /* Cursor de "prohibido" */
+        }
+
+        .leccion-card.bloqueada:hover {
+            transform: none;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Título de la lección */
+        .leccion-titulo {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+            font-family: Arial, sans-serif;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .leccion-card.bloqueada .leccion-titulo {
+            color: #ccc;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Imagen de la lección */
+        .leccion-imagen {
+            width: 160px;
+            height: 160px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            object-fit: cover;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Estado de la lección */
+        .leccion-estado {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .estado-completada {
+            background: #32CD32;
+            color: white;
+        }
+
+        .estado-disponible {
+            background: #00BFFF;
+            color: white;
+        }
+
+        .estado-bloqueada {
+            background: #888;
+            color: white;
+        }
+
+        /* Botón de iniciar */
+        .boton-iniciar {
+            width: 50px;
+            height: auto;
+            cursor: pointer;
+            margin-top: auto;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            padding: 0;
+            filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.3));
+        }
+
+        .boton-iniciar:hover {
+            transform: translateY(-2px) scale(1.05);
+            filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.4));
+        }
+
+        .leccion-card.bloqueada .boton-iniciar {
+            cursor: not-allowed;
+            opacity: 0.5;
+            filter: grayscale(100%) drop-shadow(0 4px 15px rgba(0, 0, 0, 0.2));
+        }
+
+        .leccion-card.bloqueada .boton-iniciar:hover {
+            transform: none;
+            filter: grayscale(100%) drop-shadow(0 4px 15px rgba(0, 0, 0, 0.2));
+        }
+
+        /* Icono de bloqueo */
+        .icono-bloqueo {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 30px;
+            height: 30px;
+        }
+
+        /* Palomita de lección completada */
+        .palomita-completada {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            display: none;
+        }
+
+        .leccion-card.completada .palomita-completada {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .titulo-principal {
+                font-size: 2.5rem;
+                margin-bottom: 30px;
+            }
+
+            .lecciones-container {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 18px;
+                padding: 0 10px;
+            }
+
+            .leccion-card {
+                padding: 15px;
+                min-height: 280px;
+            }
+
+            .leccion-titulo {
+                font-size: 1.1rem;
+            }
+
+            .leccion-imagen {
+                width: 130px;
+                height: 130px;
+            }
+
+            .boton-iniciar {
+                width: 45px;
+            }
+
+            .close-button {
+                width: 50px;
+                height: 50px;
+                top: 20px;
+                right: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .titulo-principal {
+                font-size: 2rem;
+            }
+
+            .lecciones-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .leccion-card {
+                padding: 12px;
+                min-height: 250px;
+            }
+
+            .leccion-titulo {
+                font-size: 1rem;
+            }
+
+            .leccion-imagen {
+                width: 110px;
+                height: 110px;
+            }
+
+            .boton-iniciar {
+                width: 35px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Botón de cerrar -->
+    <div class="close-button" onclick="window.location.href='/'">
+        <img src="../static/images/images_lecciones/regresar.png" alt="Regresar">
+    </div>
+
+    <!-- Título principal -->
+    <h1 class="titulo-principal">Lecciones</h1>
+
+    <!-- Contenedor de lecciones -->
+    <div class="lecciones-container">
+        <!-- Lección 1: Introducción (Disponible por defecto) -->
+        <div class="leccion-card disponible" id="leccion-introduccion" onclick="iniciarLeccion('introduccion')">
+            <img src="../static/images/images_lecciones/palomita.png" 
+                 alt="Completada" 
+                 class="palomita-completada">
+            <h3 class="leccion-titulo">Introducción</h3>
+            <img src="../static/images/images_lecciones/introduciion.jpg" 
+                 alt="Introducción" 
+                 class="leccion-imagen">
+            <img src="../static/images/images_lecciones/boton_iniciar.png" 
+                 alt="Iniciar" 
+                 class="boton-iniciar" 
+                 onclick="event.stopPropagation(); iniciarLeccion('introduccion')">
+        </div>
+
+        <!-- Lección 2: Coordinación (Bloqueada inicialmente) -->
+        <div class="leccion-card bloqueada" id="leccion-coordinacion" onclick="iniciarLeccion('coordinacion')">
+            <img src="../static/images/images_lecciones/palomita.png" 
+                 alt="Completada" 
+                 class="palomita-completada">
+            <h3 class="leccion-titulo">Lección 1: Coordinación</h3>
+            <img src="../static/images/images_lecciones/coordinacion.jpg" 
+                 alt="Coordinación" 
+                 class="leccion-imagen">
+            <img src="../static/images/images_lecciones/bloqueado.png" 
+                 alt="Bloqueada" 
+                 class="boton-iniciar">
+        </div>
+
+        <!-- Lección 3: Abecedario (Bloqueada inicialmente) -->
+        <div class="leccion-card bloqueada" id="leccion-abecedario">
+            <img src="../static/images/images_lecciones/palomita.png" 
+                 alt="Completada" 
+                 class="palomita-completada">
+            <h3 class="leccion-titulo">Lección 2: Abecedario</h3>
+            <img src="../static/images/images_lecciones/abecedario.jpg" 
+                 alt="Abecedario" 
+                 class="leccion-imagen">
+            <img src="../static/images/images_lecciones/bloqueado.png" 
+                 alt="Bloqueada" 
+                 class="boton-iniciar">
+        </div>
+
+        <!-- Lección 4: Números (Bloqueada inicialmente) -->
+        <div class="leccion-card bloqueada" id="leccion-numeros">
+            <img src="../static/images/images_lecciones/palomita.png" 
+                 alt="Completada" 
+                 class="palomita-completada">
+            <h3 class="leccion-titulo">Lección 3: Números</h3>
+            <img src="../static/images/images_lecciones/numeros.jpg" 
+                 alt="Números" 
+                 class="leccion-imagen">
+            <img src="../static/images/images_lecciones/bloqueado.png" 
+                 alt="Bloqueada" 
+                 class="boton-iniciar">
+        </div>
+    </div>
+
+    <script>
+        // === SISTEMA DE PROGRESO DE LECCIONES ===
+        
+        // ORDEN SECUENCIAL: Define el orden en que se desbloquean las lecciones
+        // Cada lección debe completarse para desbloquear la siguiente
+        const LECCIONES_ORDEN = [
+            'introduccion',    // 1. Siempre disponible (punto de entrada)
+            'coordinacion',    // 2. Se desbloquea al completar introducción
+            'abecedario',      // 3. Se desbloquea al completar coordinación
+            'numeros'          // 4. Se desbloquea al completar abecedario
+        ];
+
+        // === FUNCIÓN: CARGAR PROGRESO GUARDADO ===
+        // Lee el progreso del usuario desde el almacenamiento local del navegador
+        function cargarProgreso() {
+            // Intentar obtener datos guardados
+            const progreso = localStorage.getItem('progreso_lecciones');
+            if (progreso) {
+                // Si hay datos, convertir de texto a objeto JavaScript
+                return JSON.parse(progreso);
+            }
+            // ESTADO INICIAL: Solo la introducción está disponible
+            return {
+                'introduccion': 'disponible',  // Puede jugar
+                'coordinacion': 'bloqueada',   // No puede acceder
+                'abecedario': 'bloqueada',     // No puede acceder
+                'numeros': 'bloqueada'         // No puede acceder
+            };
+        }
+
+        // === FUNCIÓN: GUARDAR PROGRESO ===
+        // Guarda el estado actual en el almacenamiento local del navegador
+        function guardarProgreso(progreso) {
+            // Convertir objeto a texto y guardarlo
+            localStorage.setItem('progreso_lecciones', JSON.stringify(progreso));
+        }
+
+        // Completar una lección y desbloquear la siguiente
+        function completarLeccion(leccionId) {
+            const progreso = cargarProgreso();
+            
+            // Solo marcar como completada si no lo estaba ya
+            if (progreso[leccionId] !== 'completada') {
+                progreso[leccionId] = 'completada';
+                
+                // Encontrar la siguiente lección y desbloquearla
+                const indiceActual = LECCIONES_ORDEN.indexOf(leccionId);
+                if (indiceActual >= 0 && indiceActual < LECCIONES_ORDEN.length - 1) {
+                    const siguienteLeccion = LECCIONES_ORDEN[indiceActual + 1];
+                    if (progreso[siguienteLeccion] === 'bloqueada') {
+                        progreso[siguienteLeccion] = 'disponible';
+                    }
+                }
+                
+                guardarProgreso(progreso);
+                actualizarInterfaz();
+            }
+        }
+
+        // Actualizar la interfaz según el progreso
+        function actualizarInterfaz() {
+            const progreso = cargarProgreso();
+            
+            Object.keys(progreso).forEach(leccionId => {
+                const elemento = document.getElementById('leccion-' + leccionId);
+                if (elemento) {
+                    const estado = progreso[leccionId];
+                    
+                    // Remover todas las clases de estado
+                    elemento.classList.remove('disponible', 'bloqueada', 'completada');
+                    
+                    // Agregar la clase correcta
+                    elemento.classList.add(estado);
+                    
+                    // Todas las lecciones disponibles y completadas pueden ser clickeadas
+                    // Actualizar clases CSS de la tarjeta
+                    elemento.classList.remove('disponible', 'bloqueada', 'completada');
+                    elemento.classList.add(estado);
+
+                    if (estado === 'disponible' || estado === 'completada') {
+                        elemento.onclick = function() { iniciarLeccion(leccionId); };
+                        elemento.style.cursor = 'pointer';
+                    } else {
+                        elemento.onclick = null;
+                        elemento.style.cursor = 'not-allowed';
+                    }
+                    
+                    // Actualizar imagen del botón
+                    const botonImg = elemento.querySelector('.boton-iniciar');
+                    if (botonImg) {
+                        if (estado === 'bloqueada') {
+                            botonImg.src = '../static/images/images_lecciones/bloqueado.png';
+                            botonImg.alt = 'Bloqueada';
+                        } else {
+                            botonImg.src = '../static/images/images_lecciones/boton_iniciar.png';
+                            botonImg.alt = estado === 'completada' ? 'Jugar de nuevo' : 'Iniciar';
+                        }
+                    }
+                }
+            });
+        }
+
+        // Función para iniciar una lección
+        function iniciarLeccion(leccion) {
+            const progreso = cargarProgreso();
+            
+            // Verificar si la lección está disponible o completada (se puede repetir)
+            if (progreso[leccion] === 'bloqueada') {
+                console.log('Lección bloqueada:', leccion);
+                return;
+            }
+            
+            // Las lecciones disponibles y completadas se pueden jugar
+            switch(leccion) {
+                case 'introduccion':
+                    window.location.href = '/introduccion';
+                    break;
+                case 'coordinacion':
+                    window.location.href = '/leccion_coordinacion';
+                    break;
+                case 'abecedario':
+                    window.location.href = '/leccion_abecedario';
+                    break;
+                case 'numeros':
+                    window.location.href = '/leccion_numeros';
+                    break;
+                default:
+                    console.log('Lección no disponible:', leccion);
+            }
+        }
+
+        // Función para ser llamada cuando se complete una lección (desde otras páginas)
+        window.completarLeccion = completarLeccion;
+
+        // Animación al cargar la página
+        window.addEventListener('load', function() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+            
+            // Cargar y aplicar el progreso guardado
+            actualizarInterfaz();
+            
+            // Animar las tarjetas una por una
+            const cards = document.querySelectorAll('.leccion-card');
+            cards.forEach(function(card, index) {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = 'all 0.5s ease';
+                
+                setTimeout(function() {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 200 * (index + 1));
+            });
+            
+            setTimeout(function() {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+
+        // Efecto hover solo para lecciones disponibles
+        document.addEventListener('DOMContentLoaded', function() {
+            function aplicarEfectosHover() {
+                document.querySelectorAll('.leccion-card.disponible, .leccion-card.completada').forEach(function(card) {
+                    card.addEventListener('mouseenter', function() {
+                        this.style.transform = 'translateY(-8px) scale(1.02)';
+                    });
+                    
+                    card.addEventListener('mouseleave', function() {
+                        this.style.transform = 'translateY(0) scale(1)';
+                    });
+                });
+            }
+            
+            // Aplicar efectos inicialmente y después de cada actualización
+            setTimeout(aplicarEfectosHover, 1000);
+        });
+
+        // Función para resetear progreso (para pruebas)
+        function resetearProgreso() {
+            localStorage.removeItem('progreso_lecciones');
+            location.reload();
+        }
+        
+        // Hacer disponible globalmente para depuración
+        window.resetearProgreso = resetearProgreso;
+    </script>
+</body>
+</html>
