@@ -384,9 +384,6 @@
         // Cada lección debe completarse para desbloquear la siguiente
         const LECCIONES_ORDEN = [
             'introduccion',    // 1. Siempre disponible (punto de entrada)
-            'coordinacion',    // 2. Se desbloquea al completar introducción
-            'abecedario',      // 3. Se desbloquea al completar coordinación
-            'numeros'          // 4. Se desbloquea al completar abecedario
         ];
 
         // === FUNCIÓN: CARGAR PROGRESO GUARDADO ===
@@ -396,14 +393,23 @@
             const progreso = localStorage.getItem('progreso_lecciones');
             if (progreso) {
                 // Si hay datos, convertir de texto a objeto JavaScript
-                return JSON.parse(progreso);
+                const datos = JSON.parse(progreso);
+                // Forzar Abecedario bloqueado siempre
+                datos['abecedario'] = 'bloqueada';
+                // Forzar Coordinación bloqueada siempre
+                datos['coordinacion'] = 'bloqueada';
+                // Forzar Introducción a mostrarse como disponible (no completada)
+                if (datos['introduccion']) {
+                    datos['introduccion'] = 'disponible';
+                }
+                return datos;
             }
             // ESTADO INICIAL: Solo la introducción está disponible
             return {
                 'introduccion': 'disponible',  // Puede jugar
-                'coordinacion': 'bloqueada',   // No puede acceder
-                'abecedario': 'bloqueada',     // No puede acceder
-                'numeros': 'bloqueada'         // No puede acceder
+                'coordinacion': 'bloqueada',   // Bloqueada permanentemente
+                'abecedario': 'bloqueada',     // Bloqueada permanentemente
+                'numeros': 'bloqueada'         // Bloqueada permanentemente
             };
         }
 

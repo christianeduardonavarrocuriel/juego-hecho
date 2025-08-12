@@ -649,8 +649,8 @@
             html += '<label class="form-label" for="tipo-usuario-' + chiquilloCounter + '">¿Qué eres?</label>';
             html += '<select id="tipo-usuario-' + chiquilloCounter + '" name="tipo_usuario_' + chiquilloCounter + '" class="form-input" required>';
             html += '<option value="" disabled selected>Selecciona una opción</option>';
-            html += '<option value="ajolotito">Ajolotito</option>';
-            html += '<option value="ajolotita">Ajolotita</option>';
+            html += '<option value="Ajolotito">Ajolotito</option>';
+            html += '<option value="Ajolotita">Ajolotita</option>';
             html += '</select>';
             html += '</div>';
             html += '<div class="form-group">';
@@ -747,74 +747,27 @@
 
         // Función para manejar el envío del formulario
         document.getElementById('registro-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Recopilar datos de todos los chiquillos
+            // Validar antes de enviar (no usamos fetch, envío tradicional)
             var chiquillos = document.querySelectorAll('.chiquillo-form');
-            var datosChiquillos = [];
-            
             for (var i = 0; i < chiquillos.length; i++) {
                 var numero = i + 1;
                 var tipo = document.getElementById('tipo-usuario-' + numero).value;
-                var nombre = document.getElementById('nombre-' + numero).value;
-                var apellidos = document.getElementById('apellidos-' + numero).value;
+                var nombre = document.getElementById('nombre-' + numero).value.trim();
+                var apellidos = document.getElementById('apellidos-' + numero).value.trim();
                 var contraseña = document.getElementById('contraseña-' + numero).value;
-                
-                // Validar que todos los campos estén completos
                 if (!tipo || !nombre || !apellidos) {
+                    e.preventDefault();
                     alert('Por favor, completa todos los campos del Niño ' + numero + '.');
                     return;
                 }
-                
-                // Validar que la contraseña tenga exactamente 6 animales
-                var animalesSeleccionados = contraseña ? contraseña.split(',').filter(animal => animal.trim() !== '') : [];
-                if (animalesSeleccionados.length !== 6) {
+                var animales = contraseña ? contraseña.split(',').filter(a => a) : [];
+                if (animales.length !== 6) {
+                    e.preventDefault();
                     alert('La contraseña del Niño ' + numero + ' debe tener exactamente 6 animales.');
                     return;
                 }
-                
-                var datos = {
-                    numero: numero,
-                    tipo: tipo,
-                    nombre: nombre,
-                    apellidos: apellidos,
-                    contraseña: contraseña
-                };
-                datosChiquillos.push(datos);
             }
-            
-            // Crear un formulario dinámico para enviar al servidor
-            var formData = new FormData();
-            
-            for (var i = 0; i < datosChiquillos.length; i++) {
-                var datos = datosChiquillos[i];
-                formData.append('genero', datos.tipo);
-                formData.append('nombres', datos.nombre);
-                formData.append('apellidos', datos.apellidos);
-                formData.append('password_figuras', datos.contraseña);
-            }
-            
-            // Enviar los datos al servidor
-            fetch('/registrar_chiquillo', {
-                method: 'POST',
-                body: formData,
-                redirect: 'follow'  // Permitir seguir redirecciones automáticamente
-            })
-            .then(response => {
-                if (response.ok) {
-                    // Si la respuesta es exitosa, redirigir manualmente
-                    window.location.href = '/saludo_admin';
-                } else {
-                    // Si hay error, obtener el texto del error
-                    return response.text().then(errorText => {
-                        throw new Error(errorText || 'Error en el servidor');
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert(error.message || 'Ocurrió un error al registrar los niños. Por favor, inténtalo de nuevo.');
-            });
+            // Si pasa validaciones, permitir envío normal
         });
 
         // Animación adicional al cargar la página

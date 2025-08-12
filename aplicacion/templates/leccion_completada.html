@@ -176,10 +176,7 @@
             // Marcar introducción como completada
             progreso['introduccion'] = 'completada';
             
-            // Desbloquear la siguiente lección (coordinación)
-            if (progreso['coordinacion'] === 'bloqueada') {
-                progreso['coordinacion'] = 'disponible';
-            }
+            // Coordinación permanece bloqueada, solo podría desbloquearse manualmente en el futuro
 
             // Guardar progreso
             localStorage.setItem('progreso_lecciones', JSON.stringify(progreso));

@@ -396,7 +396,7 @@
         <div class="form-section">
             <h1 class="form-title">Iniciar Sesión</h1>
             
-            <form class="form-container" action="/iniciar_sesion" method="POST">
+            <form class="form-container" action="/iniciar_sesion" method="POST" id="login-nino-form">
                 <div class="form-group">
                     <label class="form-label" for="nombre">Nombre de Niño:</label>
                     <input 
@@ -430,8 +430,8 @@
                     </div>
                     <input 
                         type="hidden" 
-                        id="contraseña" 
-                        name="contraseña" 
+                        id="password_animales" 
+                        name="password_animales" 
                         required
                     >
                     <!-- Controles de animales -->
@@ -452,6 +452,7 @@
                     </div>
                 </div>
 
+                <div id="error-msg" style="display:none;color:#ffdddd;background:rgba(255,0,0,0.35);padding:10px 15px;border-radius:12px;font-weight:bold;text-align:center;"></div>
                 <button type="submit" class="submit-button">Iniciar Sesión</button>
 
                 <!-- Enlace para registrarse -->
@@ -539,39 +540,35 @@
             }
         });
 
-        // Función para manejar el envío del formulario
-        document.querySelector('.form-container').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Obtener los datos del formulario
-            const nombre = document.getElementById('nombre').value;
-            const apellidos = document.getElementById('primer-apellido-y-segundo-apellido').value;
-            const contraseña = document.getElementById('contraseña').value;
-            
-            // Validar que la contraseña tenga exactamente 6 animales
-            const animalesSeleccionados = contraseña ? contraseña.split(',').filter(animal => animal.trim() !== '') : [];
-            
-            if (!nombre || !apellidos) {
-                alert('Por favor, completa todos los campos.');
-                return;
-            }
-            
-            if (animalesSeleccionados.length !== 6) {
-                alert('Tu contraseña debe tener exactamente 6 animales.');
-                return;
-            }
-            
-            // Si todo está correcto, proceder con el inicio de sesión
-            const datosNino = {
-                nombre: nombre,
-                apellidos: apellidos,
-                contraseña: contraseña,
-                fechaAcceso: new Date().toISOString()
+        // Mostrar mensajes de error desde query param ?error=
+        (function(){
+            const params = new URLSearchParams(window.location.search);
+            const ecode = params.get('error');
+            if(!ecode) return;
+            const map = {
+                'campos':'Completa todos los campos.',
+                'pass':'La contraseña debe tener exactamente 6 animales.',
+                'animales':'Solo se permiten: ajolote, borrego, oso, perro.',
+                'credenciales':'Datos incorrectos. Revisa nombre, apellidos y animales.',
+                'sistema':'Error interno. Intenta de nuevo.'
             };
-            localStorage.setItem('ninoActual', JSON.stringify(datosNino));
-            
-            // Redirigir al saludo del chiquillo
-            window.location.href = '/saludo_chiquillo';
+            const div = document.getElementById('error-msg');
+            div.textContent = map[ecode] || 'Error desconocido.';
+            div.style.display='block';
+        })();
+        // Limpiar error al escribir o seleccionar animales
+        const clearError = ()=>{ const d=document.getElementById('error-msg'); if(d.style.display==='block'){ d.style.display='none'; } };
+        document.getElementById('nombre').addEventListener('input', clearError);
+        document.getElementById('primer-apellido-y-segundo-apellido').addEventListener('input', clearError);
+        document.addEventListener('click', e=>{ if(e.target.closest('.shape-btn.animal')|| e.target.classList.contains('clear-btn')) clearError(); });
+        // Validación rápida en cliente antes de enviar
+        document.getElementById('login-nino-form').addEventListener('submit', function(ev){
+            const pwd = document.getElementById('password_animales').value;
+            const arr = pwd.split(',').filter(a=>a);
+            if(arr.length!==6){
+                ev.preventDefault();
+                alert('La contraseña debe tener exactamente 6 animales.');
+            }
         });
 
     </script>

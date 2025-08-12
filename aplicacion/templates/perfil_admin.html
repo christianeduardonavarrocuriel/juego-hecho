@@ -334,9 +334,9 @@ $def with (tutor, ninos)
             <div class="profile-avatar">
                 <img src="../static/images/images_perfil_admin/ajolote_dorado.png" alt="Avatar">
             </div>
-            <div class="profile-name" id="profile-name">$tutor['nombres'] $tutor['apellidos']</div>
-            <div class="profile-role" id="profile-role">$tutor['rol']</div>
-            <div class="profile-email" id="profile-email">$tutor['correo']</div>
+            <div class="profile-name" id="profile-name">Usuario Administrador</div>
+            <div class="profile-role" id="profile-role">Tutor</div>
+            <div class="profile-email" id="profile-email">usuario@email.com</div>
         </div>
 
         <!-- Secciones del perfil -->
@@ -349,15 +349,15 @@ $def with (tutor, ninos)
                 </h3>
                 <div class="info-item">
                     <div class="info-label">Nombre completo:</div>
-                    <div class="info-value" id="nombre-completo">$tutor['nombres'] $tutor['apellidos']</div>
+                    <div class="info-value" id="nombre-completo">Nombre del Usuario</div>
                 </div>
                 <div class="info-item">
                     <div class="info-label">Email:</div>
-                    <div class="info-value" id="email-info">$tutor['correo']</div>
+                    <div class="info-value" id="email-info">usuario@email.com</div>
                 </div>
                 <div class="info-item">
                     <div class="info-label">Tipo de cuenta:</div>
-                    <div class="info-value" id="tipo-cuenta">$tutor['rol']</div>
+                    <div class="info-value" id="tipo-cuenta">Tutor</div>
                 </div>
                 <div class="info-item">
                     <div class="info-label">Fecha de registro:</div>
@@ -371,21 +371,10 @@ $def with (tutor, ninos)
                     Niños Registrados
                 </h3>
                 <div class="children-list" id="children-list">
-                    $if ninos:
-                        $for nino in ninos:
-                            <div class="child-item">
-                                <div class="child-avatar">
-                                    $nino['nombres'][0].upper()
-                                </div>
-                                <div class="child-info">
-                                    <div class="child-name">$nino['nombres'] $nino['apellidos']</div>
-                                    <div class="child-progress">$nino['genero']</div>
-                                </div>
-                            </div>
-                    $else:
-                        <div class="info-value" style="text-align: center; padding: 20px; color: rgba(255,255,255,0.7);">
-                            No hay niños registrados aún
-                        </div>
+                    <!-- Los niños registrados se cargarán dinámicamente aquí -->
+                    <div class="info-value" style="text-align: center; padding: 20px; color: rgba(255,255,255,0.7);">
+                        No hay niños registrados aún
+                    </div>
                 </div>
             </div>
         </div>
@@ -395,13 +384,170 @@ $def with (tutor, ninos)
             <button class="action-button" onclick="window.location.href='/registrar_chiquillo'">
                 Registrar nuevo niño
             </button>
-            <button class="action-button secondary" onclick="window.location.href='/logout'">
-                Cerrar Sesión
-            </button>
         </div>
     </div>
 
     <script>
+        // Función para obtener la inicial del nombre
+        function obtenerInicial(nombre) {
+            return nombre ? nombre.charAt(0).toUpperCase() : 'U';
+        }
+
+        // Función para formatear fecha
+        function formatearFecha(fecha) {
+            if (!fecha) return '--';
+            const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(fecha).toLocaleDateString('es-ES', opciones);
+        }
+
+        // Función para cargar datos del usuario
+        function cargarDatosUsuario() {
+            // Obtener datos del tutor desde localStorage (datos del formulario de registro)
+            const datosTutor = JSON.parse(localStorage.getItem('datosTutor')) || {};
+            const ninosRegistrados = JSON.parse(localStorage.getItem('ninosRegistrados')) || [];
+
+            // Extraer información del tutor
+            const nombre = datosTutor.nombre || 'Usuario';
+            const apellidos = datosTutor.apellidos || 'Administrador';
+            const email = datosTutor.email || 'usuario@email.com';
+            const tipoUsuario = datosTutor.tipo_usuario || 'tutor';
+            const nombreCompleto = nombre + ' ' + apellidos;
+
+            // Actualizar información del perfil principal
+            document.getElementById('profile-name').textContent = nombreCompleto;
+            document.getElementById('profile-email').textContent = email;
+            document.getElementById('nombre-completo').textContent = nombreCompleto;
+            document.getElementById('email-info').textContent = email;
+            
+            // Determinar el tipo de cuenta basado en lo que seleccionó el usuario
+            let rolMostrar = 'Tutor'; // Valor por defecto
+            if (tipoUsuario === 'padre') {
+                rolMostrar = 'Padre';
+            } else if (tipoUsuario === 'tutor') {
+                rolMostrar = 'Tutor';
+            } else if (tipoUsuario === 'maestro') {
+                rolMostrar = 'Maestro';
+            }
+            document.getElementById('profile-role').textContent = rolMostrar;
+            document.getElementById('tipo-cuenta').textContent = rolMostrar;
+            
+            // Actualizar fechas
+            const fechaRegistro = datosTutor.fechaRegistro || new Date().toISOString();
+            document.getElementById('fecha-registro').textContent = formatearFecha(fechaRegistro);
+
+            // Cargar niños registrados
+            cargarNinosRegistrados(ninosRegistrados);
+        }
+
+        // Función para cargar la lista de niños registrados
+        function cargarNinosRegistrados(ninos) {
+            const listaContainer = document.getElementById('children-list');
+            
+            if (ninos.length === 0) {
+                listaContainer.innerHTML = 
+                    '<div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.7);">' +
+                    'No hay niños registrados aún' +
+                    '</div>';
+                return;
+            }
+
+            listaContainer.innerHTML = '';
+            
+            ninos.forEach(function(nino) {
+                const inicial = obtenerInicial(nino.nombre);
+                const nombreCompleto = nino.nombre + ' ' + (nino.apellidos || '');
+                const tipoTexto = nino.tipo === 'ajolotito' ? 'Ajolotito' : 
+                                 nino.tipo === 'ajolotita' ? 'Ajolotita' : 'No especificado';
+
+                const childItem = document.createElement('div');
+                childItem.className = 'child-item';
+                childItem.innerHTML = 
+                    '<div class="child-avatar">' + inicial + '</div>' +
+                    '<div class="child-info">' +
+                        '<div class="child-name">' + nombreCompleto + '</div>' +
+                        '<div class="child-progress">' + tipoTexto + '</div>' +
+                    '</div>';
+                
+                listaContainer.appendChild(childItem);
+            });
+        }
+
+        // Función para verificar si hay datos nuevos desde el formulario de registro
+        function verificarDatosDesdeRegistro() {
+            // Esta función puede ser llamada desde otros archivos para actualizar datos
+            // Por ejemplo, desde registrar_tutor.html al completar el registro
+            
+            // Verificar si hay parámetros en la URL con datos del usuario
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('nombre') || urlParams.has('email')) {
+                const datosNuevos = {
+                    nombre: urlParams.get('nombre') || '',
+                    apellidos: urlParams.get('apellidos') || '',
+                    email: urlParams.get('email') || '',
+                    telefono: urlParams.get('telefono') || '',
+                    tipo_usuario: urlParams.get('tipo_usuario') || 'tutor',
+                    fechaRegistro: new Date().toISOString()
+                };
+                
+                // Guardar los datos nuevos
+                localStorage.setItem('datosTutor', JSON.stringify(datosNuevos));
+                
+                // Recargar la página sin parámetros para limpiar la URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+                
+                // Recargar datos del usuario
+                cargarDatosUsuario();
+            }
+        }
+
+        // Función pública para que otros archivos puedan guardar datos del tutor
+        window.actualizarPerfilTutor = function(datosTutor, ninosRegistrados) {
+            if (datosTutor) {
+                localStorage.setItem('datosTutor', JSON.stringify(datosTutor));
+            }
+            if (ninosRegistrados) {
+                localStorage.setItem('ninosRegistrados', JSON.stringify(ninosRegistrados));
+            }
+        };
+
+        // Función para guardar datos del tutor (llamar desde el formulario de registro)
+        function guardarDatosTutor(datosFormulario) {
+            const datosTutor = {
+                nombre: datosFormulario.nombre,
+                apellidos: datosFormulario.apellidos,
+                email: datosFormulario.email,
+                telefono: datosFormulario.telefono || '',
+                tipo_usuario: datosFormulario.tipo_usuario || 'tutor',
+                contraseña: datosFormulario.contraseña,
+                fechaRegistro: new Date().toISOString()
+            };
+            
+            localStorage.setItem('datosTutor', JSON.stringify(datosTutor));
+            return datosTutor;
+        }
+
+        // Función para guardar niños registrados (llamar desde registrar_chiquillo)
+        function guardarNinosRegistrados(listaHijos) {
+            localStorage.setItem('ninosRegistrados', JSON.stringify(listaHijos));
+        }
+
+        // Función para simular datos del tutor si no hay datos reales
+        function cargarDatosEjemplo() {
+            // NO cargar datos de ejemplo automáticamente
+            // Solo mostrar mensaje de que no hay datos si no existen
+            console.log('Verificando datos del tutor...');
+            
+            const datosTutorExistentes = localStorage.getItem('datosTutor');
+            const ninosRegistradosExistentes = localStorage.getItem('ninosRegistrados');
+            
+            if (!datosTutorExistentes) {
+                console.log('No se encontraron datos del tutor');
+            }
+            if (!ninosRegistradosExistentes) {
+                console.log('No se encontraron niños registrados');
+            }
+        }
+
         // Animación al cargar la página
         window.addEventListener('load', function() {
             document.body.style.opacity = '0';
@@ -410,6 +556,17 @@ $def with (tutor, ninos)
             setTimeout(function() {
                 document.body.style.opacity = '1';
             }, 100);
+
+            // Cargar datos del usuario
+            cargarDatosEjemplo(); // Verificar si existen datos reales
+            cargarDatosUsuario();
+            
+            // Verificar si hay datos nuevos desde el registro
+            verificarDatosDesdeRegistro();
+            
+            // Mostrar mensaje en consola para debugging
+            console.log('Datos del tutor:', localStorage.getItem('datosTutor'));
+            console.log('Niños registrados:', localStorage.getItem('ninosRegistrados'));
 
             // Animar las secciones
             const sections = document.querySelectorAll('.profile-section');
