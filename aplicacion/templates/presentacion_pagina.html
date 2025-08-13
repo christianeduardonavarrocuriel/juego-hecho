@@ -229,7 +229,22 @@
         Tu navegador no soporta el elemento de audio.
     </audio>
 
-    
+    <script>
+        // === FUNCIÓN PARA REPRODUCIR EL SONIDO DEL BOTÓN ===
+        function reproducirSonidoBoton() {
+            try {
+                const audioBoton = document.getElementById('audioBoton');
+                if (audioBoton) {
+                    audioBoton.currentTime = 0; // Reinicia el audio al principio
+                    audioBoton.play().catch(function(error) {
+                        console.log('Error reproduciendo sonido del botón:', error);
+                    });
+                }
+            } catch (error) {
+                console.log('Error al acceder al audio del botón:', error);
+            }
+        }
+    </script>
 </body>
 </html>
 

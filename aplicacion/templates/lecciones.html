@@ -377,7 +377,24 @@
         </div>
     </div>
 
-    
+    <script>
+        // === FUNCIÓN PARA INICIAR LECCIONES ===
+        function iniciarLeccion(leccion) {
+            console.log('Iniciando lección:', leccion);
+            
+            switch(leccion) {
+                case 'introduccion':
+                    window.location.href = '/introduccion';
+                    break;
+                case 'coordinacion':
+                    window.location.href = '/leccion_coordinacion';
+                    break;
+                default:
+                    console.log('Lección no disponible:', leccion);
+                    alert('Esta lección aún no está disponible');
+            }
+        }
+    </script>
 </body>
 </html>
 
