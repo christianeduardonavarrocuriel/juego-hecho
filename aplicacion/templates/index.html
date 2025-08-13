@@ -252,13 +252,10 @@
                     <img src="/static/images/images_index/logo.png" alt="Logo">
                 </div>
                 <span>¡Adiós al Silencio!</span>
+                <!--LOGOUT_MARK-->
             </div>
             <div class="nav-buttons">
                 <button class="nav-btn" onclick="window.location.href='/iniciar_sesion'">JUGAR</button>
-                <!-- Botón de salir - solo visible cuando hay sesión activa -->
-                <button class="nav-btn" id="salir-btn" style="display: none;" onclick="cerrarSesion()">
-                    <img src="/static/images/images_index/salir.png" alt="Salir" style="width: 24px; height: 24px; vertical-align: middle;">
-                </button>
                 <button class="nav-btn" onclick="window.location.href='/registrar_tutor'">CREAR CUENTA</button>
                 <button class="nav-btn" onclick="window.location.href='/quienes_somos'">¿QUIÉNES SOMOS?</button>
             </div>
@@ -322,36 +319,6 @@
         </div>
     </div>
 
-    <script>
-        // Función para verificar si hay una sesión activa
-        function verificarSesion() {
-            // Verificar si hay información de sesión en localStorage
-            const usuarioActual = localStorage.getItem('usuarioActual');
-            const tipoUsuario = localStorage.getItem('tipoUsuario');
-            
-            // Si hay sesión activa, mostrar el botón de salir
-            if (usuarioActual && tipoUsuario) {
-                document.getElementById('salir-btn').style.display = 'inline-block';
-            }
-        }
-
-        // Función para cerrar sesión
-        function cerrarSesion() {
-            // Limpiar información de sesión
-            localStorage.removeItem('usuarioActual');
-            localStorage.removeItem('tipoUsuario');
-            
-            // Ocultar el botón de salir
-            document.getElementById('salir-btn').style.display = 'none';
-            
-            // Opcional: Recargar la página para actualizar la interfaz
-            window.location.reload();
-        }
-
-        // Ejecutar verificación cuando se carga la página
-        document.addEventListener('DOMContentLoaded', function() {
-            verificarSesion();
-        });
-    </script>
+    <!-- Script eliminado: gestión de sesión ahora servidor -->
 </body>
 </html>

@@ -229,32 +229,7 @@
         Tu navegador no soporta el elemento de audio.
     </audio>
 
-    <script>
-        // === FUNCIÓN PARA EL ÚLTIMO SONIDO DE LA SECUENCIA ===
-        // Reproduce la nota "MI" cuando el usuario hace clic en "CONTINUAR"
-        function reproducirSonidoBoton() {
-            const audioBoton = document.getElementById('audioBoton');
-            if (audioBoton) {
-                audioBoton.volume = 0.8;        // Mismo volumen que páginas anteriores
-                audioBoton.currentTime = 0;     // Reiniciar desde el inicio
-                // Reproducir la nota "MI" - culminación de la secuencia musical
-                audioBoton.play().catch(function(error) {
-                    console.log('Error al reproducir sonido del botón:', error);
-                });
-            }
-        }
-
-        // === ANIMACIÓN DE ENTRADA ===
-        // Efecto fade-in consistente con todas las páginas
-        window.addEventListener('load', function() {
-            document.body.style.opacity = '0';              // Invisible al inicio
-            document.body.style.transition = 'opacity 0.5s ease';  // Transición suave
-            
-            // Hacer visible la página después de 100ms
-            setTimeout(function() {
-                document.body.style.opacity = '1';
-            }, 100);
-        });
-    </script>
+    
 </body>
 </html>
+

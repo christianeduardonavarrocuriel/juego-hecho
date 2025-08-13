@@ -245,26 +245,22 @@
     </audio>
 
     <script>
-        // === FUNCIÓN PARA REPRODUCIR SONIDO DEL BOTÓN ===
-        // Esta función se ejecuta cuando el usuario hace clic en "CONTINUAR"
+        // === FUNCIÓN PARA REPRODUCIR EL SONIDO DEL BOTÓN ===
         function reproducirSonidoBoton() {
-            // Obtenemos el elemento de audio del botón
-            const audioBoton = document.getElementById('audioBoton');
-            if (audioBoton) {
-                audioBoton.volume = 0.8;        // Volumen al 80%
-                audioBoton.currentTime = 0;     // Empezar desde el inicio
-                // Intentar reproducir el sonido "RE"
-                audioBoton.play().catch(function(error) {
-                    console.log('Error al reproducir sonido del botón:', error);
-                });
+            try {
+                const audioBoton = document.getElementById('audioBoton');
+                if (audioBoton) {
+                    audioBoton.currentTime = 0; // Reinicia el audio al principio
+                    audioBoton.play().catch(function(error) {
+                        console.log('Error reproduciendo sonido del botón:', error);
+                    });
+                }
+            } catch (error) {
+                console.log('Error al acceder al audio del botón:', error);
             }
         }
-
-        // === ANIMACIÓN AL CARGAR LA PÁGINA ===
-        // Mostrar página inmediatamente para mejor rendimiento
-        window.addEventListener('load', function() {
-            document.body.style.opacity = '1';
-        });
     </script>
+
 </body>
 </html>
+

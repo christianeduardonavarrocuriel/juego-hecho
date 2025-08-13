@@ -459,27 +459,6 @@
         </div>
     </div>
 
-    <script>
-        // Animación de entrada al cargar la página
-        window.addEventListener('load', function() {
-            // Mostrar página inmediatamente
-            document.body.style.opacity = '1';
-        });
-
-        // Animación adicional para el globo de diálogo
-        const speechBubble = document.querySelector('.speech-bubble');
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.animation = 'slideIn 1s ease-out';
-                }
-            });
-        });
-        
-        if (speechBubble) {
-            observer.observe(speechBubble);
-        }
-    </script>
+    
 </body>
 </html>

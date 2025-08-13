@@ -377,126 +377,12 @@
                 <button type="submit" class="submit-button">Acceder como Administrador</button>
 
                 <!-- Enlace para regresar -->
-                <div class="back-link">
+                                <div class="back-link">
                     <a href="/iniciar_sesion">← Regresar al inicio de sesión normal</a>
                 </div>
             </form>
         </div>
     </div>
 
-    <script>
-        // Función para manejar el envío del formulario
-        document.querySelector('.form-container').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Obtener los datos del formulario
-            const correo = document.getElementById('correo').value.trim();
-            const contraseña = document.getElementById('contraseña').value;
-            
-            // Validar que la contraseña tenga exactamente 6 caracteres
-            if (contraseña.length !== 6) {
-                alert('La contraseña debe tener exactamente 6 caracteres.');
-                return;
-            }
-            
-            // Validar que el correo tenga formato válido
-            // Verificar formato básico de email
-            let isValid = true;
-            let errorMsg = 'Error: Formato de correo electrónico inválido.\n\n';
-            
-            // Detectar errores específicos
-            if (correo !== correo.toLowerCase()) {
-                errorMsg += '• No use mayúsculas en el correo\n';
-                isValid = false;
-            }
-            if (!correo.includes('@')) {
-                errorMsg += '• Falta el símbolo @\n';
-                isValid = false;
-            }
-            if (!correo.includes('.')) {
-                errorMsg += '• Falta el punto (.)\n';
-                isValid = false;
-            }
-            if (correo.includes(' ')) {
-                errorMsg += '• No se permiten espacios\n';
-                isValid = false;
-            }
-            
-            // Validación adicional sin regex problemática
-            const atIndex = correo.indexOf('@');
-            const lastDotIndex = correo.lastIndexOf('.');
-            
-            if (atIndex > lastDotIndex || atIndex === -1 || lastDotIndex === -1) {
-                errorMsg += '• Formato incorrecto (debe ser: usuario@dominio.com)\n';
-                isValid = false;
-            }
-            
-            // Validar que sea de un proveedor conocido
-            const dominiosPermitidos = [
-                // Proveedores internacionales
-                'gmail.com', 'outlook.com', 'hotmail.com', 'yahoo.com', 
-                'live.com', 'msn.com', 'icloud.com', 'protonmail.com',
-                'zoho.com', 'aol.com', 'mail.com', 'gmx.com',
-                
-                // Dominios institucionales de México
-                'unam.mx', 'ipn.mx', 'itesm.mx', 'udg.mx', 'uanl.mx',
-                'uach.mx', 'uas.mx', 'uaslp.mx', 'uv.mx', 'buap.mx',
-                'uat.mx', 'ujat.mx', 'unach.mx', 'uacj.mx', 'uabc.mx',
-                'uson.mx', 'uady.mx', 'ugto.mx', 'uaem.mx', 'uamx.mx',
-                'utec.edu.mx', 'utectulancingo.edu.mx',
-                
-                // Dominios educativos generales de México
-                'edu.mx', 'estudiantes.unam.mx', 'alumno.ipn.mx',
-                'itesm.edu.mx', 'tec.mx', 'estudiante.unam.mx',
-                
-                // Dominios gubernamentales de México
-                'gob.mx', 'sep.gob.mx', 'conacyt.mx', 'cinvestav.mx'
-            ];
-            
-            if (correo.includes('@')) {
-                const dominio = correo.split('@')[1];
-                if (dominio && !dominiosPermitidos.includes(dominio.toLowerCase())) {
-                    errorMsg += '• Solo se aceptan correos de: Gmail, Outlook, Yahoo, instituciones educativas (.edu.mx), etc.\n';
-                    isValid = false;
-                }
-            }
-            // Redirigir al perfil de administrador después del inicio de sesión
-            window.location.href = '/perfil_admin';
-        });
-
-        // Manejar el placeholder de contraseña
-        const contraseñaInput = document.getElementById('contraseña');
-        const placeholderContraseña = document.getElementById('placeholder-contraseña');
-
-        contraseñaInput.addEventListener('input', function() {
-            if (this.value.length > 0) {
-                placeholderContraseña.style.display = 'none';
-            } else {
-                placeholderContraseña.style.display = 'block';
-            }
-        });
-
-        contraseñaInput.addEventListener('focus', function() {
-            if (this.value.length > 0) {
-                placeholderContraseña.style.display = 'none';
-            }
-        });
-
-        contraseñaInput.addEventListener('blur', function() {
-            if (this.value.length === 0) {
-                placeholderContraseña.style.display = 'block';
-            }
-        });
-
-        // Animación adicional al cargar la página
-        window.addEventListener('load', function() {
-            document.body.style.opacity = '0';
-            document.body.style.transition = 'opacity 0.5s ease';
-            
-            setTimeout(function() {
-                document.body.style.opacity = '1';
-            }, 100);
-        });
-    </script>
 </body>
 </html>

@@ -238,6 +238,127 @@
             transform: translateY(-1px);
         }
 
+        /* Estilos para el sistema de contraseña con animales */
+        .password-display {
+            min-height: 80px;
+            padding: 15px;
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .password-hint {
+            color: rgba(255, 255, 255, 0.7);
+            font-style: italic;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .selected-animal {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 3px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            animation: animalAppear 0.3s ease-out;
+        }
+
+        @keyframes animalAppear {
+            0% { transform: scale(0) rotate(180deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(90deg); opacity: 0.8; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .animal-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .animal-option {
+            cursor: pointer;
+            display: block;
+        }
+
+        .animal-option input[type="checkbox"] {
+            display: none;
+        }
+
+        .animal-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 15px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .animal-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .animal-option input[type="checkbox"]:checked + .animal-btn {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.2);
+            transform: scale(1.1);
+        }
+
+        .animal-btn img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .animal-btn span {
+            color: #333;
+            font-weight: bold;
+            font-size: 1rem;
+            text-transform: capitalize;
+        }
+
+        .clear-password-btn {
+            width: 100%;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #ff6b6b, #ff5252);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .clear-password-btn:hover {
+            background: linear-gradient(135deg, #ff5252, #f44336);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
         /* Estilos para múltiples chiquillos */
         .chiquillo-form {
             border: 2px solid rgba(255, 255, 255, 0.3);
@@ -256,43 +377,6 @@
             text-align: center;
             margin-bottom: 20px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .chiquillo-controls {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 0px;
-        }
-
-        .add-chiquillo-btn, .remove-chiquillo-btn {
-            background: linear-gradient(135deg, #32CD32);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 50px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(50, 205, 50, 0.4);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .remove-chiquillo-btn {
-            background: linear-gradient(135deg, #DC143C);
-            box-shadow: 0 4px 15px rgba(255, 99, 71, 0.4);
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            padding: 8px 15px;
-            font-size: 0.9rem;
-        }
-
-        .remove-chiquillo-btn:hover {
-            background: linear-gradient(135deg, #DC143C, #FF6347);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 99, 71, 0.6);
         }
 
         /* Animaciones */
@@ -591,284 +675,195 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label" for="contraseña-1">Selecciona tu contraseña con animales:</label>
+                            <label class="form-label" for="contraseña-1">Selecciona tu contraseña con animales (4 animales):</label>
+                            
+                            <!-- Display area for selected animals -->
                             <div class="password-display" id="password-display-1">
-                                <!-- Aquí se mostrarán las imágenes de animales seleccionados -->
+                                <span class="password-hint">Haz clic en los animales para crear tu contraseña (necesitas 4)</span>
                             </div>
+                            
+                            <!-- Hidden input for the actual password -->
                             <input 
                                 type="hidden" 
                                 id="contraseña-1" 
                                 name="contraseña_1" 
                                 required
                             >
-                            <!-- Controles de figuras geométricas -->
-                            <div class="shape-controls">
-                                <button type="button" class="shape-btn animal" data-shape="ajolote">
-                                    <img src="../static/images/images_emojis/ajolote_cara.png" alt="Ajolote">
-                                </button>
-                                <button type="button" class="shape-btn animal" data-shape="borrego">
-                                    <img src="../static/images/images_emojis/borrego_cara.png" alt="Borrego">
-                                </button>
-                                <button type="button" class="shape-btn animal" data-shape="oso">
-                                    <img src="../static/images/images_emojis/oso.png" alt="Oso">
-                                </button>
-                                <button type="button" class="shape-btn animal" data-shape="perro">
-                                    <img src="../static/images/images_emojis/perro.png" alt="Perro">
-                                </button>
-                                <button type="button" class="clear-btn">Borrar</button>
+                            
+                            <!-- Animal selection buttons -->
+                            <div class="animal-selector">
+                                <label class="animal-option">
+                                    <input type="checkbox" name="animal-ajolote-1" value="ajolote">
+                                    <div class="animal-btn">
+                                        <img src="../static/images/images_emojis/ajolote_cara.png" alt="Ajolote">
+                                        <span>Ajolote</span>
+                                    </div>
+                                </label>
+                                
+                                <label class="animal-option">
+                                    <input type="checkbox" name="animal-borrego-1" value="borrego">
+                                    <div class="animal-btn">
+                                        <img src="../static/images/images_emojis/borrego_cara.png" alt="Borrego">
+                                        <span>Borrego</span>
+                                    </div>
+                                </label>
+                                
+                                <label class="animal-option">
+                                    <input type="checkbox" name="animal-oso-1" value="oso">
+                                    <div class="animal-btn">
+                                        <img src="../static/images/images_emojis/oso.png" alt="Oso">
+                                        <span>Oso</span>
+                                    </div>
+                                </label>
+                                
+                                <label class="animal-option">
+                                    <input type="checkbox" name="animal-perro-1" value="perro">
+                                    <div class="animal-btn">
+                                        <img src="../static/images/images_emojis/perro.png" alt="Perro">
+                                        <span>Perro</span>
+                                    </div>
+                                </label>
                             </div>
+                            
+                            <!-- Clear button -->
+                            <button type="button" class="clear-password-btn" onclick="clearPassword()">Borrar Contraseña</button>
+                            
+                            <small style="color: rgba(255,255,255,0.8); font-size: 0.9rem; margin-top: 5px; display: block;">
+                                Selecciona exactamente 4 animales. Puedes repetir el mismo animal.
+                            </small>
                         </div>
                     </div>
                 </div>
 
-                <!-- Botones para agregar/quitar chiquillos -->
-                <div class="chiquillo-controls">
-                    <button type="button" class="add-chiquillo-btn" onclick="agregarChiquillo()">
-                        + Agregar otro niño
-                    </button>
-                </div>
             </form>
         </div>
     </div>
 
     <script>
-        var chiquilloCounter = 1;
+        let selectedAnimals = [];
+        const maxAnimals = 4;
 
-        // Función para agregar un nuevo chiquillo
-        function agregarChiquillo() {
-            chiquilloCounter++;
-            var container = document.getElementById('chiquillos-container');
-            
-            var nuevoChiquillo = document.createElement('div');
-            nuevoChiquillo.className = 'chiquillo-form';
-            nuevoChiquillo.setAttribute('data-chiquillo', chiquilloCounter);
-            
-            var html = '<button type="button" class="remove-chiquillo-btn" onclick="eliminarChiquillo(' + chiquilloCounter + ')">✕ Eliminar</button>';
-            html += '<h3 class="chiquillo-title">Niño ' + chiquilloCounter + '</h3>';
-            html += '<div class="form-group">';
-            html += '<label class="form-label" for="tipo-usuario-' + chiquilloCounter + '">¿Qué eres?</label>';
-            html += '<select id="tipo-usuario-' + chiquilloCounter + '" name="tipo_usuario_' + chiquilloCounter + '" class="form-input" required>';
-            html += '<option value="" disabled selected>Selecciona una opción</option>';
-            html += '<option value="Ajolotito">Ajolotito</option>';
-            html += '<option value="Ajolotita">Ajolotita</option>';
-            html += '</select>';
-            html += '</div>';
-            html += '<div class="form-group">';
-            html += '<label class="form-label" for="nombre-' + chiquilloCounter + '">Nombre:</label>';
-            html += '<input type="text" id="nombre-' + chiquilloCounter + '" name="nombre_' + chiquilloCounter + '" class="form-input" placeholder="Escribe el nombre" required>';
-            html += '</div>';
-            html += '<div class="form-group">';
-            html += '<label class="form-label" for="apellidos-' + chiquilloCounter + '">Primer Apellido y Segundo Apellido:</label>';
-            html += '<input type="text" id="apellidos-' + chiquilloCounter + '" name="apellidos_' + chiquilloCounter + '" class="form-input" placeholder="Escribe los apellidos" required>';
-            html += '</div>';
-            html += '<div class="form-group">';
-            html += '<label class="form-label" for="contraseña-' + chiquilloCounter + '">Selecciona tu contraseña con animales:</label>';
-            html += '<div class="password-display" id="password-display-' + chiquilloCounter + '"></div>';
-            html += '<input type="hidden" id="contraseña-' + chiquilloCounter + '" name="contraseña_' + chiquilloCounter + '" required>';
-            html += '<div class="shape-controls">';
-            html += '<button type="button" class="shape-btn animal" data-shape="ajolote"><img src="../static/images/images_emojis/ajolote_cara.png" alt="Ajolote"></button>';
-            html += '<button type="button" class="shape-btn animal" data-shape="borrego"><img src="../static/images/images_emojis/borrego_cara.png" alt="Borrego"></button>';
-            html += '<button type="button" class="shape-btn animal" data-shape="oso"><img src="../static/images/images_emojis/oso.png" alt="Oso"></button>';
-            html += '<button type="button" class="shape-btn animal" data-shape="perro"><img src="../static/images/images_emojis/perro.png" alt="Perro"></button>';
-            html += '<button type="button" class="clear-btn">Borrar</button>';
-            html += '</div>';
-            html += '</div>';
-            
-            nuevoChiquillo.innerHTML = html;
-            container.appendChild(nuevoChiquillo);
-            
-            // Animar la aparición del nuevo formulario
-            nuevoChiquillo.style.opacity = '0';
-            nuevoChiquillo.style.transform = 'translateY(20px)';
-            
-            setTimeout(function() {
-                nuevoChiquillo.style.transition = 'all 0.5s ease';
-                nuevoChiquillo.style.opacity = '1';
-                nuevoChiquillo.style.transform = 'translateY(0)';
-            }, 100);
-        }
-
-        // Función para eliminar un chiquillo
-        function eliminarChiquillo(numero) {
-            var chiquillo = document.querySelector('[data-chiquillo="' + numero + '"]');
-            if (chiquillo) {
-                chiquillo.style.transition = 'all 0.3s ease';
-                chiquillo.style.opacity = '0';
-                chiquillo.style.transform = 'translateY(-20px)';
+        // Handle animal selection
+        document.addEventListener('change', function(e) {
+            if (e.target.type === 'checkbox' && e.target.name.startsWith('animal-')) {
+                const animalType = e.target.value;
+                const passwordDisplay = document.getElementById('password-display-1');
+                const hiddenInput = document.getElementById('contraseña-1');
                 
-                setTimeout(function() {
-                    chiquillo.remove();
-                    reordenarChiquillos();
-                }, 300);
-            }
-        }
-
-        // Función para reordenar los números de los chiquillos después de eliminar uno
-        function reordenarChiquillos() {
-            var chiquillos = document.querySelectorAll('.chiquillo-form');
-            chiquilloCounter = 0;
-            
-            for (var i = 0; i < chiquillos.length; i++) {
-                chiquilloCounter = i + 1;
-                var chiquillo = chiquillos[i];
-                chiquillo.setAttribute('data-chiquillo', chiquilloCounter);
-                
-                // Actualizar el título
-                var titulo = chiquillo.querySelector('.chiquillo-title');
-                titulo.textContent = 'Niño ' + chiquilloCounter;
-                
-                // Actualizar IDs y names de los campos
-                var campos = chiquillo.querySelectorAll('input, select');
-                for (var j = 0; j < campos.length; j++) {
-                    var campo = campos[j];
-                    var baseId = campo.id.split('-').slice(0, -1).join('-');
-                    var baseName = campo.name.split('_').slice(0, -1).join('_');
-                    
-                    campo.id = baseId + '-' + chiquilloCounter;
-                    campo.name = baseName + '_' + chiquilloCounter;
-                    
-                    // Actualizar el for del label correspondiente
-                    var labels = chiquillo.querySelectorAll('label');
-                    for (var k = 0; k < labels.length; k++) {
-                        var label = labels[k];
-                        if (label.getAttribute('for') && label.getAttribute('for').indexOf(baseId) !== -1) {
-                            label.setAttribute('for', campo.id);
-                        }
+                if (e.target.checked) {
+                    // Add animal if under limit
+                    if (selectedAnimals.length < maxAnimals) {
+                        selectedAnimals.push(animalType);
+                        addAnimalToDisplay(animalType, passwordDisplay);
+                    } else {
+                        // Uncheck if limit reached
+                        e.target.checked = false;
+                        alert('Solo puedes seleccionar máximo 4 animales');
+                    }
+                } else {
+                    // Remove one instance of this animal
+                    const index = selectedAnimals.indexOf(animalType);
+                    if (index > -1) {
+                        selectedAnimals.splice(index, 1);
+                        removeAnimalFromDisplay(animalType, passwordDisplay);
                     }
                 }
                 
-                // Actualizar el botón de eliminar
-                var btnEliminar = chiquillo.querySelector('.remove-chiquillo-btn');
-                if (btnEliminar) {
-                    btnEliminar.setAttribute('onclick', 'eliminarChiquillo(' + chiquilloCounter + ')');
+                // Update hidden input
+                hiddenInput.value = selectedAnimals.join(',');
+                
+                // Update display
+                updatePasswordDisplay(passwordDisplay);
+            }
+        });
+
+        function addAnimalToDisplay(animalType, display) {
+            const img = document.createElement('img');
+            let imageName = 'perro.png';
+            if (animalType === 'ajolote') imageName = 'ajolote_cara.png';
+            else if (animalType === 'borrego') imageName = 'borrego_cara.png';
+            else if (animalType === 'oso') imageName = 'oso.png';
+            
+            img.src = '../static/images/images_emojis/' + imageName;
+            img.alt = animalType;
+            img.className = 'selected-animal';
+            img.onclick = function() {
+                removeSpecificAnimal(animalType, this);
+            };
+            display.appendChild(img);
+        }
+
+        function removeAnimalFromDisplay(animalType, display) {
+            const animals = display.querySelectorAll('.selected-animal');
+            for (let animal of animals) {
+                if (animal.alt === animalType) {
+                    animal.remove();
+                    break;
                 }
             }
         }
 
-        // Función para manejar el envío del formulario
+        function removeSpecificAnimal(animalType, element) {
+            const index = selectedAnimals.indexOf(animalType);
+            if (index > -1) {
+                selectedAnimals.splice(index, 1);
+                element.remove();
+                
+                // Update hidden input
+                document.getElementById('contraseña-1').value = selectedAnimals.join(',');
+                
+                // Uncheck the corresponding checkbox if no more of this animal
+                if (!selectedAnimals.includes(animalType)) {
+                    const checkbox = document.querySelector('input[value="' + animalType + '"]');
+                    if (checkbox) checkbox.checked = false;
+                }
+                
+                updatePasswordDisplay(document.getElementById('password-display-1'));
+            }
+        }
+
+        function updatePasswordDisplay(display) {
+            const hint = display.querySelector('.password-hint');
+            if (selectedAnimals.length === 0) {
+                if (!hint) {
+                    const span = document.createElement('span');
+                    span.className = 'password-hint';
+                    span.textContent = 'Haz clic en los animales para crear tu contraseña (necesitas 4)';
+                    display.appendChild(span);
+                }
+            } else {
+                if (hint) hint.remove();
+            }
+        }
+
+        function clearPassword() {
+            selectedAnimals = [];
+            const display = document.getElementById('password-display-1');
+            const hiddenInput = document.getElementById('contraseña-1');
+            
+            // Clear display
+            display.innerHTML = '';
+            
+            // Clear hidden input
+            hiddenInput.value = '';
+            
+            // Uncheck all checkboxes
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = false);
+            
+            // Add hint back
+            updatePasswordDisplay(display);
+        }
+
+        // Form validation
         document.getElementById('registro-form').addEventListener('submit', function(e) {
-            // Validar antes de enviar (no usamos fetch, envío tradicional)
-            var chiquillos = document.querySelectorAll('.chiquillo-form');
-            for (var i = 0; i < chiquillos.length; i++) {
-                var numero = i + 1;
-                var tipo = document.getElementById('tipo-usuario-' + numero).value;
-                var nombre = document.getElementById('nombre-' + numero).value.trim();
-                var apellidos = document.getElementById('apellidos-' + numero).value.trim();
-                var contraseña = document.getElementById('contraseña-' + numero).value;
-                if (!tipo || !nombre || !apellidos) {
-                    e.preventDefault();
-                    alert('Por favor, completa todos los campos del Niño ' + numero + '.');
-                    return;
-                }
-                var animales = contraseña ? contraseña.split(',').filter(a => a) : [];
-                if (animales.length !== 6) {
-                    e.preventDefault();
-                    alert('La contraseña del Niño ' + numero + ' debe tener exactamente 6 animales.');
-                    return;
-                }
-            }
-            // Si pasa validaciones, permitir envío normal
-        });
-
-        // Animación adicional al cargar la página
-        window.addEventListener('load', function() {
-            document.body.style.opacity = '0';
-            document.body.style.transition = 'opacity 0.5s ease';
-            
-            setTimeout(function() {
-                document.body.style.opacity = '1';
-            }, 100);
-        });
-
-        // Sistema de contraseña visual integrado en el formulario
-        document.addEventListener('click', function(e) {
-            // Manejar clics en botones de animales (tanto botón como imagen)
-            const animalBtn = e.target.closest('.shape-btn.animal');
-            if (animalBtn) {
+            if (selectedAnimals.length !== maxAnimals) {
                 e.preventDefault();
-                const animalName = animalBtn.getAttribute('data-shape');
-                const animalImgSrc = animalBtn.querySelector('img').src;
-                const formGroup = animalBtn.closest('.form-group');
-                const passwordDisplay = formGroup.querySelector('.password-display');
-                const hiddenInput = formGroup.querySelector('input[type="hidden"]');
-                
-                // Limitar a máximo 6 animales
-                if (passwordDisplay.children.length < 6) {
-                    // Crear nueva imagen del animal
-                    const animalImg = document.createElement('img');
-                    animalImg.src = animalImgSrc;
-                    animalImg.className = 'password-animal';
-                    animalImg.alt = animalName;
-                    animalImg.title = animalName;
-                    
-                    // Añadir la imagen al contenedor visual
-                    passwordDisplay.appendChild(animalImg);
-                    
-                    // Actualizar el campo oculto con los nombres de los animales
-                    const currentValue = hiddenInput.value;
-                    hiddenInput.value = currentValue ? currentValue + ',' + animalName : animalName;
-                }
-                
-                // Efecto visual en el botón
-                animalBtn.style.transform = 'translateY(-3px) scale(1.2)';
-                setTimeout(function() {
-                    animalBtn.style.transform = 'translateY(-3px) scale(1.1)';
-                }, 200);
-            }
-            
-            // Manejar clics en botones de borrar
-            if (e.target.classList.contains('clear-btn')) {
-                e.preventDefault();
-                const formGroup = e.target.closest('.form-group');
-                const passwordDisplay = formGroup.querySelector('.password-display');
-                const hiddenInput = formGroup.querySelector('input[type="hidden"]');
-                
-                // Limpiar el contenedor visual y el campo oculto
-                passwordDisplay.innerHTML = '';
-                hiddenInput.value = '';
-            }
-            
-            // Manejar clics en las imágenes de animales para eliminarlas individualmente
-            if (e.target.classList.contains('password-animal')) {
-                e.preventDefault();
-                const formGroup = e.target.closest('.form-group');
-                const passwordDisplay = formGroup.querySelector('.password-display');
-                const hiddenInput = formGroup.querySelector('input[type="hidden"]');
-                const animalToRemove = e.target.alt;
-                
-                // Eliminar la imagen del contenedor visual
-                e.target.remove();
-                
-                // Actualizar el campo oculto removiendo el animal
-                const animals = hiddenInput.value.split(',').filter(animal => animal !== animalToRemove);
-                hiddenInput.value = animals.join(',');
-            }
-            
-            // Compatibilidad con el sistema anterior para botones geométricos
-            if (e.target.classList.contains('shape-btn') && !e.target.classList.contains('animal')) {
-                e.preventDefault();
-                const shapeSymbol = e.target.getAttribute('data-shape');
-                const formGroup = e.target.closest('.form-group');
-                const passwordInput = formGroup.querySelector('input[type="text"]');
-                
-                if (passwordInput.value.length < 10) {
-                    passwordInput.value += shapeSymbol;
-                }
-                
-                // Efecto visual en el botón
-                e.target.style.transform = 'scale(1.2)';
-                setTimeout(function() {
-                    e.target.style.transform = 'scale(1)';
-                }, 200);
-            }
-        });
-
-        // Limpiar contraseña con doble clic
-        document.addEventListener('dblclick', function(e) {
-            if (e.target.type === 'text' && e.target.name.includes('contraseña')) {
-                e.target.value = '';
+                alert('Debes seleccionar exactamente ' + maxAnimals + ' animales para la contraseña.');
             }
         });
     </script>
+    
 </body>
 </html>
+

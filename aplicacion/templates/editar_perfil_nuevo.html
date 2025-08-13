@@ -1,0 +1,169 @@
+$def with (tutor)
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Perfil - Adios al Silencio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(180deg, #00BFFF 0%, #1E90FF 50%, #00BFFF 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            box-sizing: border-box;
+        }
+        input:focus, select:focus {
+            outline: none;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        button, .btn {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #FF1493, #FF69B4);
+            color: white;
+        }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Editar Perfil</h1>
+        
+        <form action="/editar_perfil" method="POST">
+            <!-- Campos ocultos para mantener parámetros de URL -->
+            <input type="hidden" id="tutor_id" name="tutor_id" value="">
+            <input type="hidden" id="token" name="token" value="">
+            
+            <div class="form-group">
+                <label for="nombres">Nombres:</label>
+                <input type="text" id="nombres" name="nombres" placeholder="Ingresa tus nombres" required>
+            </div>
+
+            <div class="form-group">
+                <label for="apellidos">Apellidos:</label>
+                <input type="text" id="apellidos" name="apellidos" placeholder="Ingresa tus apellidos" required>
+            </div>
+
+            <div class="form-group">
+                <label for="correo">Email:</label>
+                <input type="email" id="correo" name="correo" placeholder="usuario123456789@correo.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="rol">Rol:</label>
+                <select id="rol" name="rol" required>
+                    <option value="Padre">Padre/Madre</option>
+                    <option value="Tutor">Tutor</option>
+                    <option value="Maestro">Maestro</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Nueva Contraseña (6 caracteres):</label>
+                <input type="password" id="password" name="password" placeholder="6 caracteres" maxlength="6" required>
+            </div>
+
+            <div class="form-group">
+                <label for="verificar_password">Verificar Contraseña:</label>
+                <input type="password" id="verificar_password" name="verificar_password" placeholder="Confirma contraseña" maxlength="6" required>
+            </div>
+
+            <div class="btn-container">
+                <button type="button" class="btn btn-secondary" onclick="regresarAPerfil()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Al cargar la página, llenar campos ocultos con parámetros URL
+        window.onload = function() {
+            var urlParams = new URLSearchParams(window.location.search);
+            var tutor_id = urlParams.get('tutor_id');
+            var token = urlParams.get('token');
+            
+            if (tutor_id) {
+                document.getElementById('tutor_id').value = tutor_id;
+            }
+            if (token) {
+                document.getElementById('token').value = token;
+            }
+        };
+        
+        // Función para regresar
+        function regresarAPerfil() {
+            var urlParams = new URLSearchParams(window.location.search);
+            var tutor_id = urlParams.get('tutor_id');
+            var token = urlParams.get('token');
+            
+            if (tutor_id && token) {
+                window.location.href = '/perfil_admin?tutor_id=' + tutor_id + '&token=' + token;
+            } else {
+                window.location.href = '/perfil_admin';
+            }
+        }
+    </script>
+</body>
+</html>

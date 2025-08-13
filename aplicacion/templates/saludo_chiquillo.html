@@ -265,62 +265,45 @@
     </audio>
 
     <script>
-        // FUNCIÓN PARA REPRODUCIR SONIDO DEL BOTÓN
-        // Esta función se ejecuta cuando el usuario hace clic en "CONTINUAR"
+        // === FUNCIÓN PARA REPRODUCIR EL SONIDO DEL BOTÓN ===
         function reproducirSonidoBoton() {
-            // Buscamos el elemento de audio en la página
-            const audioBoton = document.getElementById('audioBoton');
-            if (audioBoton) {
-                // Configuramos el volumen (0.8 = 80% del volumen máximo)
-                audioBoton.volume = 0.8;
-                // Reiniciamos el audio desde el principio por si ya se había reproducido
-                audioBoton.currentTime = 0;
-                // Intentamos reproducir el sonido
-                audioBoton.play().catch(function(error) {
-                    // Si hay un error, lo mostramos en la consola del navegador
-                    console.log('Error al reproducir sonido del botón:', error);
-                });
+            try {
+                const audioBoton = document.getElementById('audioBoton');
+                if (audioBoton) {
+                    audioBoton.currentTime = 0; // Reinicia el audio al principio
+                    audioBoton.play().catch(function(error) {
+                        console.log('Error reproduciendo sonido del botón:', error);
+                    });
+                }
+            } catch (error) {
+                console.log('Error al acceder al audio del botón:', error);
             }
         }
 
-        // ANIMACIÓN AL CARGAR LA PÁGINA
-        // Esta función se ejecuta automáticamente cuando la página termina de cargar
-        window.addEventListener('load', function() {
-            // Hacemos que la página aparezca gradualmente (efecto fade-in)
-            document.body.style.opacity = '0';  // Empezamos invisible
-            document.body.style.transition = 'opacity 0.5s ease';  // Configuramos la transición
-            
-            // REPRODUCIR AUDIO DE SALUDO AUTOMÁTICAMENTE
-            const audioSaludo = document.getElementById('audioSaludo');
-            if (audioSaludo) {
-                // Configuramos un volumen moderado para el saludo
-                audioSaludo.volume = 0.7;
-                
-                // Intentamos reproducir el audio de bienvenida
-                audioSaludo.play().catch(function(error) {
-                    console.log('No se pudo reproducir el audio automáticamente:', error);
-                    // NOTA: Los navegadores modernos bloquean la reproducción automática
-                    // El audio se reproducirá cuando el usuario interactúe con la página
-                });
+        // === FUNCIÓN PARA REPRODUCIR EL SONIDO DE SALUDO ===
+        function reproducirSonidoSaludo() {
+            try {
+                const audioSaludo = document.getElementById('audioSaludo');
+                if (audioSaludo) {
+                    audioSaludo.currentTime = 0; // Reinicia el audio al principio
+                    audioSaludo.play().catch(function(error) {
+                        console.log('Error reproduciendo sonido de saludo:', error);
+                    });
+                }
+            } catch (error) {
+                console.log('Error al acceder al audio de saludo:', error);
             }
-            
-            // Después de 100 milisegundos, hacemos visible la página
-            setTimeout(function() {
-                document.body.style.opacity = '1';
-            }, 100);
-        });
+        }
 
-        // SOLUCIÓN PARA NAVEGADORES QUE BLOQUEAN AUDIO AUTOMÁTICO
-        // Si el audio no se reproduce solo, se activará con el primer clic del usuario
-        document.addEventListener('click', function() {
-            const audioSaludo = document.getElementById('audioSaludo');
-            // Solo reproducimos si el audio está pausado
-            if (audioSaludo && audioSaludo.paused) {
-                audioSaludo.play().catch(function(error) {
-                    console.log('Error al reproducir audio:', error);
-                });
-            }
-        }, { once: true }); // { once: true } significa que esto solo pasa una vez
+        // === REPRODUCIR SONIDO AL CARGAR LA PÁGINA ===
+        // Espera un momento a que todo se cargue antes de reproducir
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                reproducirSonidoSaludo();
+            }, 500); // Espera 500ms después de que la página se carga
+        });
     </script>
+    
 </body>
 </html>
+

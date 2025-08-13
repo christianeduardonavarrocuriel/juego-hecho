@@ -149,49 +149,7 @@
         </div>
     </div>
 
-    <script>
-        function continuarAventura() {
-            // Marcar la introducción como completada y desbloquear la siguiente lección
-            completarIntroduccion();
-            // Redirigir a lecciones
-            window.location.href = '/lecciones';
-        }
-
-        // Función para marcar la introducción como completada
-        function completarIntroduccion() {
-            // Cargar progreso actual
-            let progreso = localStorage.getItem('progreso_lecciones');
-            if (progreso) {
-                progreso = JSON.parse(progreso);
-            } else {
-                // Estado inicial si no existe
-                progreso = {
-                    'introduccion': 'disponible',
-                    'coordinacion': 'bloqueada',
-                    'abecedario': 'bloqueada',
-                    'numeros': 'bloqueada'
-                };
-            }
-
-            // Marcar introducción como completada
-            progreso['introduccion'] = 'completada';
-            
-            // Coordinación permanece bloqueada, solo podría desbloquearse manualmente en el futuro
-
-            // Guardar progreso
-            localStorage.setItem('progreso_lecciones', JSON.stringify(progreso));
-        }
-
-        // === ANIMACIÓN DE ENTRADA ===
-        // Efecto fade-in consistente con todas las páginas
-        window.addEventListener('load', function() {
-            document.body.style.opacity = '0';
-            document.body.style.transition = 'opacity 0.5s ease';
-            
-            setTimeout(function() {
-                document.body.style.opacity = '1';
-            }, 100);
-        });
-    </script>
+    
 </body>
 </html>
+

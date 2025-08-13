@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión - Adios al Silencio</title>
+    <title>Iniciar Sesion - Adios al Silencio</title>
     
     <style>
-        /* Estilo básico para todos los elementos */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        /* Configuración del cuerpo de la página */
         body {
             font-family: Arial, sans-serif;
             background: linear-gradient(180deg, #00BFFF 0%, #1E90FF 50%, #00BFFF 100%);
@@ -24,7 +22,6 @@
             overflow: hidden;
         }
 
-        /* Contenedor principal */
         .container {
             display: flex;
             align-items: center;
@@ -35,7 +32,6 @@
             gap: 80px;
         }
 
-        /* Sección del ajolote */
         .ajolote-section {
             flex: 1;
             display: flex;
@@ -61,13 +57,11 @@
             filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
         }
 
-        /* Sección del formulario */
         .form-section {
             flex: 1;
             max-width: 500px;
         }
 
-        /* Botón de cerrar */
         .close-button {
             position: absolute;
             top: 30px;
@@ -96,7 +90,6 @@
             filter: drop-shadow(0 6px 15px rgba(0, 0, 0, 0.5));
         }
 
-        /* Título del formulario */
         .form-title {
             color: white;
             font-size: 2.8rem;
@@ -107,7 +100,6 @@
             animation: slideDown 0.8s ease-out;
         }
 
-        /* Contenedor del formulario */
         .form-container {
             display: flex;
             flex-direction: column;
@@ -115,7 +107,6 @@
             animation: slideUp 0.8s ease-out 0.2s both;
         }
 
-        /* Grupos de campos */
         .form-group {
             display: flex;
             flex-direction: column;
@@ -151,7 +142,6 @@
             font-style: italic;
         }
 
-        /* Enlace para registrarse */
         .register-link {
             text-align: center;
             margin: 5px 0 0 0;
@@ -171,7 +161,6 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
-        /* Botón de envío */
         .submit-button {
             background: linear-gradient(135deg, #FF1493, #FF69B4);
             color: white;
@@ -198,7 +187,6 @@
             transform: translateY(-1px);
         }
 
-        /* Botón de administrador */
         .admin-button {
             background: linear-gradient(135deg, #4169E1, #6495ED);
             color: white;
@@ -225,7 +213,6 @@
             transform: translateY(-1px);
         }
 
-        /* Animaciones */
         @keyframes float {
             0%, 100% {
                 transform: translateY(0px);
@@ -257,7 +244,6 @@
             }
         }
 
-        /* Estilos para el sistema de contraseña con animales */
         .password-display {
             min-height: 60px;
             padding: 10px 15px;
@@ -274,7 +260,7 @@
         }
 
         .password-display:empty::before {
-            content: "Haz clic en los animales para crear tu contraseña";
+            content: "Haz clic en los animales para crear tu contrasena";
             color: rgba(255, 255, 255, 0.7);
             font-style: italic;
             font-size: 0.9rem;
@@ -373,18 +359,14 @@
     </style>
 </head>
 <body>
-    <!-- Botón de cerrar -->
     <div class="close-button" onclick="window.location.href='/'">
         <img src="../static/images/images_iniciar_sesion/regresar.png" alt="Regresar">
     </div>
     
-    <!-- Contenedor principal -->
     <div class="container">
-        <!-- Sección del ajolote -->
         <div class="ajolote-section">
-            <!-- Botón para iniciar sesión como administrador -->
             <button type="button" class="admin-button" onclick="window.location.href='/inicio_administrador'">
-                Iniciar Sesión de Administrador
+                Iniciar Sesion de Administrador
             </button>
             
             <div class="ajolote-character">
@@ -392,19 +374,18 @@
             </div>
         </div>
 
-        <!-- Sección del formulario -->
         <div class="form-section">
-            <h1 class="form-title">Iniciar Sesión</h1>
+            <h1 class="form-title">Iniciar Sesion</h1>
             
             <form class="form-container" action="/iniciar_sesion" method="POST" id="login-nino-form">
                 <div class="form-group">
-                    <label class="form-label" for="nombre">Nombre de Niño:</label>
+                    <label class="form-label" for="nombre">Nombre de Nino:</label>
                     <input 
                         type="text" 
                         id="nombre" 
                         name="nombre" 
                         class="form-input" 
-                        placeholder="Nombre del niño"
+                        placeholder="Nombre del nino"
                         required
                     >
                 </div>
@@ -416,17 +397,14 @@
                         id="primer-apellido-y-segundo-apellido" 
                         name="primer_apellido-y-segundo-apellido" 
                         class="form-input" 
-                        placeholder="Primer apellido y segundo apellido del niño"
+                        placeholder="Primer apellido y segundo apellido del nino"
                         required
                     >
                 </div>
 
-
                 <div class="form-group">
-                    <!-- DEBUG: Archivo actualizado correctamente -->
-                    <label class="form-label" for="contraseña">Selecciona tu contraseña con animales:</label>
+                    <label class="form-label" for="contrasena">Selecciona tu contrasena con animales:</label>
                     <div class="password-display" id="password-display" style="position: relative;">
-                        <!-- Aquí se mostrarán las imágenes de animales seleccionados -->
                     </div>
                     <input 
                         type="hidden" 
@@ -434,7 +412,6 @@
                         name="password_animales" 
                         required
                     >
-                    <!-- Controles de animales -->
                     <div class="shape-controls">
                         <button type="button" class="shape-btn animal" data-shape="ajolote">
                             <img src="../static/images/images_emojis/ajolote_cara.png" alt="Ajolote">
@@ -453,124 +430,115 @@
                 </div>
 
                 <div id="error-msg" style="display:none;color:#ffdddd;background:rgba(255,0,0,0.35);padding:10px 15px;border-radius:12px;font-weight:bold;text-align:center;"></div>
-                <button type="submit" class="submit-button">Iniciar Sesión</button>
+                <button type="submit" class="submit-button">Iniciar Sesion</button>
 
-                <!-- Enlace para registrarse -->
                 <div class="register-link">
-                    <a href="/registrar_tutor">¿No tienes cuenta? Regístrate aquí</a>
+                    <a href="/registrar_tutor">No tienes cuenta? Registrate aqui</a>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        // Sistema de contraseña visual integrado en el formulario
-        document.addEventListener('click', function(e) {
-            // Manejar clics en botones de animales (tanto botón como imagen)
-            const animalBtn = e.target.closest('.shape-btn.animal');
-            if (animalBtn) {
-                e.preventDefault();
-                const animalName = animalBtn.getAttribute('data-shape');
-                const animalImgSrc = animalBtn.querySelector('img').src;
-                const formGroup = animalBtn.closest('.form-group');
-                const passwordDisplay = formGroup.querySelector('.password-display');
-                const hiddenInput = formGroup.querySelector('input[type="hidden"]');
+        var animalPassword = [];
+        var maxAnimals = 4;
+        
+        function updatePasswordDisplay() {
+            var display = document.getElementById('password-display');
+            var hiddenInput = document.getElementById('password_animales');
+            
+            display.innerHTML = '';
+            
+            for (var i = 0; i < animalPassword.length; i++) {
+                var animalName = animalPassword[i];
+                var img = document.createElement('img');
+                img.src = '../static/images/images_emojis/' + animalName + '_cara.png';
+                if (animalName === 'oso' || animalName === 'perro') {
+                    img.src = '../static/images/images_emojis/' + animalName + '.png';
+                }
+                img.className = 'password-animal';
+                img.alt = animalName;
+                img.title = animalName + ' - Clic para eliminar';
                 
-                // Limitar a máximo 6 animales
-                if (passwordDisplay.children.length < 6) {
-                    // Ocultar el placeholder si existe antes de agregar el animal
-                    const placeholder = passwordDisplay.querySelector('#placeholder-animales');
-                    if (placeholder) {
-                        placeholder.style.display = 'none';
+                img.onclick = (function(index) {
+                    return function() {
+                        animalPassword.splice(index, 1);
+                        updatePasswordDisplay();
+                    };
+                })(i);
+                
+                display.appendChild(img);
+            }
+            
+            hiddenInput.value = animalPassword.join(',');
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            var animalButtons = document.querySelectorAll('.shape-btn.animal');
+            for (var i = 0; i < animalButtons.length; i++) {
+                animalButtons[i].addEventListener('click', function() {
+                    var animalType = this.dataset.shape;
+                    
+                    if (animalPassword.length >= maxAnimals) {
+                        showError('Solo puedes seleccionar ' + maxAnimals + ' animales maximo');
+                        return;
                     }
                     
-                    // Crear nueva imagen del animal
-                    const animalImg = document.createElement('img');
-                    animalImg.src = animalImgSrc;
-                    animalImg.className = 'password-animal';
-                    animalImg.alt = animalName;
-                    animalImg.title = animalName;
+                    animalPassword.push(animalType);
+                    updatePasswordDisplay();
+                    hideError();
                     
-                    // Añadir la imagen al contenedor visual
-                    passwordDisplay.appendChild(animalImg);
-                    
-                    // Actualizar el campo oculto con los nombres de los animales
-                    const currentValue = hiddenInput.value;
-                    hiddenInput.value = currentValue ? currentValue + ',' + animalName : animalName;
-                }
+                    this.style.transform = 'scale(0.9)';
+                    var self = this;
+                    setTimeout(function() {
+                        self.style.transform = '';
+                    }, 150);
+                });
+            }
+            
+            document.querySelector('.clear-btn').addEventListener('click', function() {
+                animalPassword = [];
+                updatePasswordDisplay();
+                hideError();
                 
-                // Efecto visual en el botón
-                animalBtn.style.transform = 'translateY(-3px) scale(1.2)';
+                this.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
+                var self = this;
                 setTimeout(function() {
-                    animalBtn.style.transform = 'translateY(-3px) scale(1.1)';
+                    self.style.background = '';
                 }, 200);
+            });
+            
+            function showError(message) {
+                var errorDiv = document.getElementById('error-msg');
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+                setTimeout(hideError, 4000);
             }
             
-            // Manejar clics en botones de borrar
-            if (e.target.classList.contains('clear-btn')) {
-                e.preventDefault();
-                const formGroup = e.target.closest('.form-group');
-                const passwordDisplay = formGroup.querySelector('.password-display');
-                const hiddenInput = formGroup.querySelector('input[type="hidden"]');
-                
-                // Limpiar el contenedor visual y el campo oculto
-                passwordDisplay.innerHTML = '<span id="placeholder-animales" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #999; pointer-events: none; font-size: 1.1rem;">Máximo 6 animales</span>';
-                hiddenInput.value = '';
+            function hideError() {
+                var errorDiv = document.getElementById('error-msg');
+                errorDiv.style.display = 'none';
             }
             
-            // Manejar clics en las imágenes de animales para eliminarlas individualmente
-            if (e.target.classList.contains('password-animal')) {
-                e.preventDefault();
-                const formGroup = e.target.closest('.form-group');
-                const passwordDisplay = formGroup.querySelector('.password-display');
-                const hiddenInput = formGroup.querySelector('input[type="hidden"]');
-                const animalToRemove = e.target.alt;
-                
-                // Eliminar la imagen del contenedor visual
-                e.target.remove();
-                
-                // Actualizar el campo oculto removiendo el animal
-                const animals = hiddenInput.value.split(',').filter(animal => animal !== animalToRemove);
-                hiddenInput.value = animals.join(',');
-                
-                // Mostrar el placeholder si no quedan animales
-                if (animals.length === 0) {
-                    passwordDisplay.innerHTML = '<span id="placeholder-animales" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #999; pointer-events: none; font-size: 1.1rem;">Máximo 6 animales</span>';
+            document.getElementById('login-nino-form').addEventListener('submit', function(e) {
+                if (animalPassword.length === 0) {
+                    e.preventDefault();
+                    showError('Debes seleccionar al menos un animal para tu contrasena');
+                    return false;
                 }
-            }
+                
+                if (animalPassword.length !== 4) {
+                    e.preventDefault();
+                    showError('Debes seleccionar exactamente ' + maxAnimals + ' animales');
+                    return false;
+                }
+                
+                console.log('Contrasena de animales:', animalPassword.join(','));
+                return true;
+            });
+            
+            updatePasswordDisplay();
         });
-
-        // Mostrar mensajes de error desde query param ?error=
-        (function(){
-            const params = new URLSearchParams(window.location.search);
-            const ecode = params.get('error');
-            if(!ecode) return;
-            const map = {
-                'campos':'Completa todos los campos.',
-                'pass':'La contraseña debe tener exactamente 6 animales.',
-                'animales':'Solo se permiten: ajolote, borrego, oso, perro.',
-                'credenciales':'Datos incorrectos. Revisa nombre, apellidos y animales.',
-                'sistema':'Error interno. Intenta de nuevo.'
-            };
-            const div = document.getElementById('error-msg');
-            div.textContent = map[ecode] || 'Error desconocido.';
-            div.style.display='block';
-        })();
-        // Limpiar error al escribir o seleccionar animales
-        const clearError = ()=>{ const d=document.getElementById('error-msg'); if(d.style.display==='block'){ d.style.display='none'; } };
-        document.getElementById('nombre').addEventListener('input', clearError);
-        document.getElementById('primer-apellido-y-segundo-apellido').addEventListener('input', clearError);
-        document.addEventListener('click', e=>{ if(e.target.closest('.shape-btn.animal')|| e.target.classList.contains('clear-btn')) clearError(); });
-        // Validación rápida en cliente antes de enviar
-        document.getElementById('login-nino-form').addEventListener('submit', function(ev){
-            const pwd = document.getElementById('password_animales').value;
-            const arr = pwd.split(',').filter(a=>a);
-            if(arr.length!==6){
-                ev.preventDefault();
-                alert('La contraseña debe tener exactamente 6 animales.');
-            }
-        });
-
     </script>
 </body>
 </html>
