@@ -175,7 +175,7 @@
       </div>
       <!-- Imagen y texto de referencia (panel lateral) -->
       <div id="reference-image-container">
-        <div id="reference-image-label">¿Qué siente esta persona?</div>
+        <div id="reference-image-label">Imita la emoción de esta persona</div>
         <img id="reference-image" src="../static/images/images_introduccion/felicidad.png" alt="Referencia Felicidad" />
       </div>
       <!-- Botón para pasar al siguiente reto una vez detectada la emoción -->
@@ -200,7 +200,7 @@
       const THRESHOLDS = {
         happy: 0.5,     // Sonrisa amplia
         surprise: 0.4,  // Boca abierta + ojos abiertos
-        angry: 0.5,    // Ajustado a 35% solicitado
+        angry: 0.36,    // Ajustado a 35% solicitado
       };
   // Mostrar panel de depuración de enojo (poner true si lo necesitas de nuevo)
   const SHOW_ANGRY_DEBUG = false;
@@ -380,11 +380,11 @@
           const emotion = EMOTIONS[index];
           // Texto dinámico según emoción
           if (emotion.key === 'angry') {
-            referenceImageLabel.textContent = '¿Qué siente el zorro?';
+            referenceImageLabel.textContent = 'Imita la emoción del zorro';
           } else if (emotion.key === 'surprise') {
-            referenceImageLabel.textContent = '¿Qué siente este pandita?';
+            referenceImageLabel.textContent = 'Imita la emoción del pandita';
           } else {
-            referenceImageLabel.textContent = '¿Qué siente esta persona?';
+            referenceImageLabel.textContent = 'Imita la emoción de esta persona';
           }
           referenceImage.src = emotion.img;
           // Reset visual
