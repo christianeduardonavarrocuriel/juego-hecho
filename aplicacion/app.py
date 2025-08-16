@@ -35,7 +35,7 @@ def conectar_db():
         conn.execute('PRAGMA journal_mode = WAL;')       # Modo especial para que varios usuarios puedan usar la base de datos
         return conn  # Devolver la conexión
     except Exception as e:
-        print(f"❌ Error conectando a la base de datos: {e}")  # Mostrar el error
+        print(f"Error conectando a la base de datos: {e}")  # Mostrar el error
         raise  # Parar el programa si no se puede conectar
 
 def init_db():
@@ -72,7 +72,7 @@ def init_db():
     
     conn.commit()  # Guardar los cambios en la base de datos
     conn.close()   # Cerrar la conexión
-    print("✅ Base de datos inicializada correctamente")
+    print("Base de datos inicializada correctamente")
 
 # FUNCIONES AUXILIARES DE SESIÓN
 def set_nino_session(row):
@@ -83,7 +83,7 @@ def set_nino_session(row):
     try:
         # Verificar si tenemos donde guardar la información de sesión
         if 'session' not in globals() or session is None:
-            print(f"[SESION] ⚠️ No hay lugar para guardar la sesión")
+            print(f"[SESION] No hay lugar para guardar la sesión")
             return False
             
         print(f"[SESION] === GUARDANDO INFORMACIÓN DEL NIÑO ===")
@@ -97,12 +97,12 @@ def set_nino_session(row):
         session.user_type = 'nino'      # Tipo de usuario = niño
         session.nino_activo = True      # El niño está conectado
         
-        print(f"[SESION] ✅ Información guardada correctamente")
+        print(f"[SESION] Información guardada correctamente")
         return True
         
     except Exception as e:
-        print(f"[SESION] ❌ Error guardando información: {e}")
-        print(f"[SESION] ⚠️ Continuando sin guardar la sesión")
+        print(f"[SESION] Error guardando información: {e}")
+        print(f"[SESION] Continuando sin guardar la sesión")
         return False
 
 def limpiar_nino_session():
@@ -132,7 +132,7 @@ def limpiar_nino_session():
         return had  # Devolver si había un niño conectado
         
     except Exception as e:
-        print(f'⚠️ [SESION] Error borrando información del niño: {e}')
+        print(f'[SESION] Error borrando información del niño: {e}')
         return False
 
 def nino_sesion_activa():
@@ -147,7 +147,7 @@ def nino_sesion_activa():
         # Ver si hay un niño activo o con información guardada
         return bool(getattr(session,'nino_activo',False) or getattr(session,'nino_id',None))
     except Exception as e:
-        print(f"⚠️ Error verificando si hay niño conectado: {e}")
+        print(f"Error verificando si hay niño conectado: {e}")
         return False
 
 def get_session_attr(name, default=None):
@@ -161,7 +161,7 @@ def get_session_attr(name, default=None):
         else:
             return default  # Si no hay sesión, devolver valor por defecto
     except Exception as e:
-        print(f"⚠️ Error obteniendo información de sesión '{name}': {e}")
+        print(f"Error obteniendo información de sesión '{name}': {e}")
         return default
 
 # CONTROLADORES DE PÁGINAS WEB
@@ -186,11 +186,11 @@ class Index:
                               "alt=\"Salir\" style=\"width:70px;height:70px;cursor:pointer;\" "
                               "onclick=\"window.location.href='/cerrar_sesion'\">")
                 contenido = contenido.replace('<!--LOGOUT_MARK-->', salir_html)  # Poner el botón en su lugar
-                print(f"[INDEX] ✅ Mostrando botón salir para niño id={get_session_attr('nino_id')}")
+                print(f"[INDEX] Mostrando botón salir para niño id={get_session_attr('nino_id')}")
             else:
                 # Sin niño conectado, no mostrar botón
                 contenido = contenido.replace('<!--LOGOUT_MARK-->', '')
-                print(f"[INDEX] ❌ Sin niño conectado - no mostrar botón salir")
+                print(f"[INDEX] Sin niño conectado - no mostrar botón salir")
             return contenido
         return 'No se encontró la página principal'  # Error si no hay archivo
 
@@ -265,7 +265,7 @@ class RegistrarTutor:
             
             # Recordar el número del tutor para el siguiente paso
             session.tutor_id = tutor_id
-            print(f"✅ Tutor registrado exitosamente: {tutor_id} {nombres} {apellidos} {rol_normalizado}")
+            print(f"Tutor registrado exitosamente: {tutor_id} {nombres} {apellidos} {rol_normalizado}")
             
             # Llevar al usuario a la página para registrar niños
             raise web.seeother('/registrar_chiquillo')
@@ -288,7 +288,7 @@ class RegistrarTutor:
                 conn.close()     # Cerrar conexión
             except Exception: 
                 pass
-            print("❌ Error registrando tutor:", e)
+            print("Error registrando tutor:", e)
             return "Error al registrar el tutor."
 
 class RegistrarChiquillo:
@@ -374,7 +374,7 @@ class RegistrarChiquillo:
             
             conn.commit()  # Confirmar todos los cambios
             conn.close()   # Cerrar conexión
-            print('✅ Niños insertados:', registros, 'Tutor', tutor_id)
+            print('Niños insertados:', registros, 'Tutor', tutor_id)
             
             # Redireccionar al saludo del chiquillo
             raise web.seeother('/saludo_chiquillo')
@@ -382,7 +382,7 @@ class RegistrarChiquillo:
         except web.HTTPError:
             raise
         except Exception as e:
-            print('❌ Error registrando niños:', e)
+            print('Error registrando niños:', e)
             try: 
                 conn.rollback()
                 conn.close()
@@ -437,7 +437,7 @@ class IniciarSesion:
             
             # Establecer sesión del niño
             set_nino_session(row)
-            print(f"✅ [LOGIN OK] Niño autenticado id={row[0]} nombre='{row[1]}' sesion_activa={nino_sesion_activa()}")
+            print(f"[LOGIN OK] Niño autenticado id={row[0]} nombre='{row[1]}' sesion_activa={nino_sesion_activa()}")
             
             # Redirigir al saludo
             raise web.seeother('/saludo_chiquillo')
@@ -464,13 +464,13 @@ class InicioAdministrador:
 
         # Validaciones básicas
         if not correo or not password:
-            print(f"[ADMIN-LOGIN] ❌ Campos vacíos")
+            print(f"[ADMIN-LOGIN] Campos vacíos")
             with open(os.path.join(TEMPLATES_DIR, 'inicio_administrador.html'), 'r', encoding='utf-8') as f:
                 html_content = f.read()
             return html_content + "<script>alert('Error: Por favor ingresa tu correo y contraseña.');</script>"
 
         if '@' not in correo or '.' not in correo:
-            print(f"[ADMIN-LOGIN] ❌ Formato de correo inválido")
+            print(f"[ADMIN-LOGIN] Formato de correo inválido")
             with open(os.path.join(TEMPLATES_DIR, 'inicio_administrador.html'), 'r', encoding='utf-8') as f:
                 html_content = f.read()
             return html_content + "<script>alert('Error: Formato de correo inválido.');</script>"
@@ -501,14 +501,14 @@ class InicioAdministrador:
                 session.tutor_rol = rol
                 session.tutor_correo = correo_db
                 
-                print(f"✅ [ADMIN-LOGIN] Login exitoso - Tutor: {nombres} {apellidos} (ID: {tutor_id})")
+                print(f"[ADMIN-LOGIN] Login exitoso - Tutor: {nombres} {apellidos} (ID: {tutor_id})")
                 
                 # Redirigir al perfil de administrador
                 token = password[:3] + correo[:3]  # Token simple para backup
                 raise web.seeother(f'/perfil_admin?tutor_id={tutor_id}&token={token}')
             else:
                 # Credenciales incorrectas
-                print(f"❌ [ADMIN-LOGIN] Credenciales incorrectas para: {correo}")
+                print(f"[ADMIN-LOGIN] Credenciales incorrectas para: {correo}")
                 with open(os.path.join(TEMPLATES_DIR, 'inicio_administrador.html'), 'r', encoding='utf-8') as f:
                     html_content = f.read()
                 return html_content + "<script>alert('Error: Correo o contraseña incorrectos.');</script>"
@@ -516,7 +516,7 @@ class InicioAdministrador:
         except web.HTTPError:
             raise
         except Exception as e:
-            print(f"❌ [ADMIN-LOGIN] Error en autenticación: {e}")
+            print(f"[ADMIN-LOGIN] Error en autenticación: {e}")
             with open(os.path.join(TEMPLATES_DIR, 'inicio_administrador.html'), 'r', encoding='utf-8') as f:
                 html_content = f.read()
             return html_content + "<script>alert('Error del sistema. Intenta de nuevo.');</script>"
@@ -534,15 +534,15 @@ class PerfilAdmin:
         logged_in = get_session_attr('logged_in', False)
         session_tutor_id = get_session_attr('tutor_id', None)
         
-        print(f"🔍 PerfilAdmin GET - logged_in: {logged_in}, session_tutor_id: {session_tutor_id}")
-        print(f"🔍 URL params - tutor_id: {url_tutor_id}, token: {url_token}")
+        print(f"PerfilAdmin GET - logged_in: {logged_in}, session_tutor_id: {session_tutor_id}")
+        print(f"URL params - tutor_id: {url_tutor_id}, token: {url_token}")
         
         # Determinar el tutor_id a usar (sesión o URL)
         tutor_id = session_tutor_id or url_tutor_id
         
         # Si no hay sesión activa ni parámetros válidos, redirigir al login
         if not tutor_id:
-            print(f"❌ Acceso denegado a perfil_admin - redirigiendo a inicio_administrador")
+            print(f"Acceso denegado a perfil_admin - redirigiendo a inicio_administrador")
             raise web.seeother('/inicio_administrador')
         
         # Si viene de URL, validar el token
@@ -558,24 +558,24 @@ class PerfilAdmin:
                     correo, password = tutor_check
                     expected_token = password[:3] + correo[:3]
                     if url_token == expected_token:
-                        print(f"✅ Token válido para tutor {url_tutor_id}")
+                        print(f"Token válido para tutor {url_tutor_id}")
                         tutor_id = url_tutor_id
                         # Establecer sesión
                         try:
                             session.logged_in = True
                             session.tutor_id = int(url_tutor_id)
                             session.user_type = 'admin'
-                            print(f"💾 Sesión establecida desde URL params")
+                            print(f"Sesión establecida desde URL params")
                         except Exception as session_error:
-                            print(f"⚠️ Error estableciendo sesión: {session_error}")
+                            print(f"Error estableciendo sesión: {session_error}")
                     else:
-                        print(f"❌ Token inválido para tutor {url_tutor_id}")
+                        print(f"Token inválido para tutor {url_tutor_id}")
                         raise web.seeother('/inicio_administrador')
                 else:
-                    print(f"❌ Tutor no encontrado con ID: {url_tutor_id}")
+                    print(f"Tutor no encontrado con ID: {url_tutor_id}")
                     raise web.seeother('/inicio_administrador')
             except Exception as e:
-                print(f"❌ Error validando token: {e}")
+                print(f"Error validando token: {e}")
                 raise web.seeother('/inicio_administrador')
         
         try:
@@ -591,7 +591,7 @@ class PerfilAdmin:
             tutor_data = cur.fetchone()
             
             if not tutor_data:
-                print(f"❌ Tutor no encontrado con ID: {tutor_id_int}")
+                print(f"Tutor no encontrado con ID: {tutor_id_int}")
                 raise web.seeother('/inicio_administrador')
             
             # Obtener niños asociados al tutor
@@ -620,14 +620,14 @@ class PerfilAdmin:
                     'password_figuras': nino[3]
                 })
             
-            print(f"✅ Perfil admin cargado - Tutor: {tutor_info['nombres']} {tutor_info['apellidos']}, Niños: {len(ninos_info)}")
+            print(f"Perfil admin cargado - Tutor: {tutor_info['nombres']} {tutor_info['apellidos']}, Niños: {len(ninos_info)}")
             
             return render.perfil_admin(tutor_info, ninos_info)
             
         except web.HTTPError:
             raise
         except Exception as e:
-            print(f"❌ Error cargando perfil admin: {e}")
+            print(f"Error cargando perfil admin: {e}")
             raise web.seeother('/inicio_administrador')
 
 # Controladores simples para páginas estáticas
@@ -759,16 +759,16 @@ session_initializer = {
 try:
     session = web.session.Session(app, web.session.DiskStore(SESSIONS_DIR),
                                   initializer=session_initializer)
-    print(f"[SESION] ✅ Sesión inicializada correctamente con DiskStore")
+    print(f"[SESION] Sesión inicializada correctamente con DiskStore")
 except PermissionError as e:
-    print(f"[SESION] ❌ No se pudo inicializar la sesión por permisos: {e}")
+    print(f"[SESION] No se pudo inicializar la sesión por permisos: {e}")
     # Fallback a memoria (no persistente)
     from web.session import Session
     class DummyStore(dict):
         def __contains__(self, key):
             return dict.__contains__(self, key)
     session = Session(app, DummyStore(), initializer=session_initializer)
-    print(f"[SESION] ⚠️ Usando DummyStore (memoria) - sesiones no persistentes")
+    print(f"[SESION] Usando DummyStore (memoria) - sesiones no persistentes")
 
 # PUNTO DE ENTRADA PRINCIPAL
 
@@ -778,16 +778,16 @@ application = app.wsgifunc()
 if __name__ == "__main__":
     try:
         # Inicializar la base de datos al arrancar el servidor
-        print("🔄 Inicializando base de datos...")
+        print("Inicializando base de datos...")
         init_db()
-        print("✅ Base de datos inicializada correctamente")
+        print("Base de datos inicializada correctamente")
         
         # Configurar puerto del servidor
         PORT = 80
         HOST = '127.0.0.1'
         
-        print(f"✅ Servidor iniciando en http://{HOST}:{PORT}")
-        print("💡 Presiona Ctrl+C para detener el servidor")
+        print(f"Servidor iniciando en http://{HOST}:{PORT}")
+        print("Presiona Ctrl+C para detener el servidor")
         
         # Iniciar el servidor web
         import sys
@@ -795,9 +795,9 @@ if __name__ == "__main__":
         app.run()  # Iniciar el servidor
         
     except KeyboardInterrupt:
-        print("\n🛑 Servidor detenido por el usuario")  # Cuando presionan Ctrl+C
+        print("\nServidor detenido por el usuario")  # Cuando presionan Ctrl+C
     except Exception as e:
-        print(f"❌ Error al iniciar servidor: {e}")
-        print("💡 Verifica que el puerto 8081 no esté en uso")
+        print(f"Error al iniciar servidor: {e}")
+        print("Verifica que el puerto 8081 no esté en uso")
         import traceback
         traceback.print_exc()  # Mostrar detalles completos del error
