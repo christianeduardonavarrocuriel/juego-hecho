@@ -1,508 +1,538 @@
 """
-Aplicación web.py simple para registro de usuarios.
+Aplicación web.py para el juego educativo de ajolotes.
+Sistema de registro de tutores y niños con autenticación por figuras.
 """
 
-import os
-import web
-import sqlite3
+# IMPORTACIONES Y CONFIGURACIÓN INICIAL
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
-STATIC_DIR = os.path.join(BASE_DIR, 'static')
+# Importar librerías que necesitamos
+import os           # Para trabajar con carpetas y archivos
+import web          # Para crear páginas web
+import sqlite3      # Para guardar datos en una base de datos
 
-render = web.template.render(TEMPLATES_DIR, cache=False)
+# Configurar rutas de carpetas
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Carpeta donde está este archivo
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')    # Carpeta con las páginas HTML
+STATIC_DIR = os.path.join(BASE_DIR, 'static')          # Carpeta con imágenes y sonidos
 
-# URLs
-urls = (
-    '/', 'Index',
-    '/registrar_tutor', 'RegistrarTutor',
-    '/registrar_chiquillo', 'RegistrarChiquillo',
-    '/static/(.*)', 'StaticFiles'
-)
+# Configurar cómo mostrar las páginas HTML
+render = web.template.render(TEMPLATES_DIR, cache=False)  # Sin guardar en memoria
 
-# Inicializar base de datos
-def init_db():
-    conn = sqlite3.connect(os.path.join(BASE_DIR, 'registro.db'))
-    cursor = conn.cursor()
-    
-    # Tabla tutores
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS tutores (
-            id_tutor INTEGER PRIMARY KEY AUTOINCREMENT,
-            rol TEXT CHECK(rol IN ('Padre', 'Tutor', 'Maestro')) NOT NULL,
-            nombres TEXT NOT NULL,
-            apellidos TEXT NOT NULL,
-            correo TEXT NOT NULL UNIQUE,
-            password TEXT NOT NULL
-        )
-    ''')
-    
-    # Tabla niños
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS ninos (
-            id_nino INTEGER PRIMARY KEY AUTOINCREMENT,
-            id_tutor INTEGER NOT NULL,
-            genero TEXT CHECK(genero IN ('Ajolotito', 'Ajolotita')) NOT NULL,
-            nombres TEXT NOT NULL,
-            apellidos TEXT NOT NULL,
-            password_figuras TEXT NOT NULL,
-            FOREIGN KEY (id_tutor) REFERENCES tutores(id_tutor)
-        )
-    ''')
-    
-    conn.commit()
-    conn.close()
-
-# Clases de las páginas
-class Index:
-    def GET(self):
-        return render.index()
-
-class RegistrarTutor:
-    def GET(self):
-        return render.registrar_tutor()
-    
-    def POST(self):
-        data = web.input()
-        try:
-            conn = sqlite3.connect(os.path.join(BASE_DIR, 'registro.db'))
-            cursor = conn.cursor()
-            
-            cursor.execute('''
-                INSERT INTO tutores (rol, nombres, apellidos, correo, password)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (
-                data.rol,
-                data.nombres,
-                data.apellidos,
-                data.correo,
-                data.password
-            ))
-            
-            conn.commit()
-            conn.close()
-            
-            # Redirigir a página de éxito o index
-            raise web.seeother('/')
-            
-        except sqlite3.IntegrityError:
-            return render.registrar_tutor() + "<script>alert('El correo ya está registrado');</script>"
-        except Exception as e:
-            return render.registrar_tutor() + f"<script>alert('Error: {e}');</script>"
-
-class RegistrarChiquillo:
-    def GET(self):
-        return render.registrar_chiquillo_simple()
-    
-    def POST(self):
-        data = web.input()
-        try:
-            conn = sqlite3.connect(os.path.join(BASE_DIR, 'registro.db'))
-            cursor = conn.cursor()
-            
-            # Buscar el tutor por correo
-            cursor.execute('SELECT id_tutor FROM tutores WHERE correo = ?', (data.correo_tutor,))
-            tutor = cursor.fetchone()
-            
-            if not tutor:
-                return render.registrar_chiquillo() + "<script>alert('Tutor no encontrado');</script>"
-            
-            cursor.execute('''
-                INSERT INTO ninos (nombres, apellidos, id_tutor, password_figuras, fecha_nacimiento)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (
-                data.nombres,
-                data.apellidos,
-                tutor[0],
-                data.password_figuras,
-                data.fecha_nacimiento
-            ))
-            
-            conn.commit()
-            conn.close()
-            
-            # Redirigir a página de éxito o index
-            raise web.seeother('/')
-            
-        except Exception as e:
-            return render.registrar_chiquillo() + f"<script>alert('Error: {e}');</script>"
-
-class StaticFiles:
-    def GET(self, path):
-        file_path = os.path.join(STATIC_DIR, path)
-        if os.path.exists(file_path) and os.path.isfile(file_path):
-            ext = os.path.splitext(path)[1].lower()
-            mime_types = {
-                '.css': 'text/css',
-                '.js': 'application/javascript',
-                '.png': 'image/png',
-                '.jpg': 'image/jpeg',
-                '.jpeg': 'image/jpeg',
-                '.gif': 'image/gif',
-                '.mp3': 'audio/mpeg',
-                '.wav': 'audio/wav'
-            }
-            web.header('Content-Type', mime_types.get(ext, 'application/octet-stream'))
-            with open(file_path, 'rb') as f:
-                return f.read()
-        else:
-            raise web.notfound()
-
-# Aplicación
-app = web.application(urls, globals())
-
-if __name__ == "__main__":
-    try:
-        # Inicializar la base de datos
-        init_db()
-        print("✅ Base de datos inicializada correctamente")
-        
-        print("✅ Servidor corriendo en http://localhost:8080")
-        
-        # Intentar usar waitress
-        try:
-            from waitress import serve
-            serve(app.wsgifunc(), host="127.0.0.1", port=8080)
-        except ImportError:
-            print("Waitress no instalado, usando servidor simple")
-            import sys
-            sys.argv = ['app.py', '127.0.0.1:8080']
-            app.run()
-            
-    except Exception as e:
-        print(f"Error al iniciar servidor: {e}")
-
-# -------- Helpers de sesión de niño (usarán la variable global session una vez inicializada) --------
-def set_nino_session(row):
-    """row: (id_nino, nombres, apellidos, id_tutor, password_figuras)"""
-    global session
-    try:
-        print(f"[SESION] === ESTABLECIENDO SESIÓN NIÑO ===")
-        print(f"[SESION] Datos recibidos: {row}")
-        print(f"[SESION] Session object: {type(session)}")
-        
-        # Verificar si la sesión está inicializada
-        try:
-            session_id = session.session_id if hasattr(session, 'session_id') else 'No disponible'
-            print(f"[SESION] Session ID antes: {session_id}")
-        except:
-            print(f"[SESION] Session ID antes: No accesible")
-        
-        # Asignar atributos de forma segura
-        session.nino_id = row[0]
-        session.nino_nombre = row[1]
-        session.nino_apellidos = row[2]
-        session.tutor_id = row[3]
-        session.user_type = 'nino'
-        session.nino_activo = True
-        
-        # Intentar múltiples métodos de guardado
-        try:
-            if hasattr(session, '_save'):
-                session._save()
-                print(f"[SESION] ✅ Sesión guardada con _save()")
-            elif hasattr(session, 'flush'):
-                session.flush()
-                print(f"[SESION] ✅ Sesión guardada con flush()")
-            else:
-                print(f"[SESION] ⚠️ Sin método de guardado explícito disponible")
-        except Exception as save_error:
-            print(f"[SESION] ⚠️ Error en guardado explícito: {save_error}")
-        
-        # Verificar asignación
-        attrs_after = {}
-        for k in ['nino_id', 'nino_nombre', 'nino_apellidos', 'user_type', 'nino_activo']:
-            try:
-                attrs_after[k] = getattr(session, k, 'NO_ENCONTRADO')
-            except:
-                attrs_after[k] = 'ERROR_ACCESO'
-        
-        print(f"[SESION] Atributos después de asignar: {attrs_after}")
-        
-        try:
-            session_id_after = session.session_id if hasattr(session, 'session_id') else 'No disponible'
-            print(f"[SESION] Session ID después: {session_id_after}")
-        except:
-            print(f"[SESION] Session ID después: No accesible")
-        
-        print(f"[SESION] ✅ Configuración de sesión completada")
-        
-    except Exception as e:
-        print(f"[SESION] ❌ Error estableciendo sesión: {e}")
-        # No hacer raise para que el login pueda continuar
-        print(f"[SESION] ⚠️ Continuando sin sesión persistente")
-
-def limpiar_nino_session():
-    global session
-    if session is None:
-        return False
-    had = bool(getattr(session, 'nino_activo', False) or getattr(session,'nino_id',None))
-    try:
-        session.nino_activo = False
-        for attr in ['nino_id','nino_nombre','nino_apellidos']:
-            if hasattr(session, attr):
-                setattr(session, attr, None)
-        if getattr(session,'user_type',None)=='nino':
-            session.user_type = None
-    except Exception as e:
-        print('[SESION] Error limpiando niño:', e)
-    return had
-
-def nino_sesion_activa():
-    global session
-    if session is None:
-        return False
-    return bool(getattr(session,'nino_activo',False) or getattr(session,'nino_id',None))
-
+# FUNCIONES AUXILIARES DE BASE DE DATOS
 def conectar_db():
-    db_path = os.path.join(BASE_DIR, 'registro.db')
-    conn = sqlite3.connect(db_path)
-    conn.execute('PRAGMA foreign_keys = ON;')
-    return conn
+    """
+    Esta función se conecta a la base de datos donde guardamos la información
+    """
+    try:
+        db_path = os.path.join(BASE_DIR, 'registro.db')  # Crear la ruta del archivo de base de datos
+        
+        # Si no existe la carpeta, crearla
+        if not os.path.exists(BASE_DIR):
+            os.makedirs(BASE_DIR, exist_ok=True)  # Crear carpeta
+            
+        conn = sqlite3.connect(db_path, timeout=10.0)    # Conectarse a la base de datos (esperar máximo 10 segundos)
+        conn.execute('PRAGMA foreign_keys = ON;')        # Activar conexiones entre tablas
+        conn.execute('PRAGMA journal_mode = WAL;')       # Modo especial para que varios usuarios puedan usar la base de datos
+        return conn  # Devolver la conexión
+    except Exception as e:
+        print(f"❌ Error conectando a la base de datos: {e}")  # Mostrar el error
+        raise  # Parar el programa si no se puede conectar
 
 def init_db():
-    conn = conectar_db()
-    cursor = conn.cursor()
+    """
+    Esta función crea las tablas en la base de datos donde guardamos la información
+    """
+    conn = conectar_db()        # Conectarse a la base de datos
+    cursor = conn.cursor()      # Crear un "cursor" para escribir comandos en la base de datos
+    
+    # Crear tabla donde guardamos información de papás/tutores/maestros
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS tutores (
-            id_tutor INTEGER PRIMARY KEY AUTOINCREMENT,
-            rol TEXT NOT NULL,
-            nombres TEXT NOT NULL,
-            apellidos TEXT NOT NULL,
-            correo TEXT NOT NULL UNIQUE,
-            password TEXT NOT NULL
+            id_tutor INTEGER PRIMARY KEY AUTOINCREMENT,  -- Número único para cada tutor (se genera automáticamente)
+            rol TEXT NOT NULL,                           -- Si es Padre, Tutor o Maestro
+            nombres TEXT NOT NULL,                       -- Nombres de la persona
+            apellidos TEXT NOT NULL,                     -- Apellidos de la persona
+            correo TEXT NOT NULL UNIQUE,                 -- Email (no puede repetirse)
+            password TEXT NOT NULL                       -- Contraseña de 6 caracteres
         )
     ''')
+    
+    # Crear tabla donde guardamos información de los niños
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS ninos (
-            id_nino INTEGER PRIMARY KEY AUTOINCREMENT,
-            id_tutor INTEGER NOT NULL,
-            genero TEXT NOT NULL CHECK(genero IN ('Ajolotito','Ajolotita')),
-            nombres TEXT NOT NULL,
-            apellidos TEXT NOT NULL,
-            password_figuras TEXT NOT NULL,
-            FOREIGN KEY (id_tutor) REFERENCES tutores(id_tutor) ON DELETE CASCADE
+            id_nino INTEGER PRIMARY KEY AUTOINCREMENT,   -- Número único para cada niño (se genera automáticamente)
+            id_tutor INTEGER NOT NULL,                   -- Número del tutor que cuida a este niño
+            genero TEXT NOT NULL CHECK(genero IN ('Ajolotito','Ajolotita')),  -- Solo puede ser Ajolotito o Ajolotita
+            nombres TEXT NOT NULL,                       -- Nombres del niño
+            apellidos TEXT NOT NULL,                     -- Apellidos del niño
+            password_figuras TEXT NOT NULL,              -- Contraseña con 4 animales (ajolote,borrego,oso,perro)
+            FOREIGN KEY (id_tutor) REFERENCES tutores(id_tutor) ON DELETE CASCADE  -- Conectar con la tabla de tutores
         )
     ''')
-    conn.commit()
-    conn.close()
+    
+    conn.commit()  # Guardar los cambios en la base de datos
+    conn.close()   # Cerrar la conexión
     print("✅ Base de datos inicializada correctamente")
 
-init_db()
+# FUNCIONES AUXILIARES DE SESIÓN
+def set_nino_session(row):
+    """
+    Guarda la información del niño cuando se conecta al juego
+    row = información del niño (id, nombre, apellidos, tutor, contraseña)
+    """
+    try:
+        # Verificar si tenemos donde guardar la información de sesión
+        if 'session' not in globals() or session is None:
+            print(f"[SESION] ⚠️ No hay lugar para guardar la sesión")
+            return False
+            
+        print(f"[SESION] === GUARDANDO INFORMACIÓN DEL NIÑO ===")
+        print(f"[SESION] Información recibida: {row}")
+        
+        # Guardar información del niño en la sesión
+        session.nino_id = row[0]        # Número único del niño
+        session.nino_nombre = row[1]    # Nombre del niño
+        session.nino_apellidos = row[2] # Apellidos del niño
+        session.tutor_id = row[3]       # Número del tutor que lo cuida
+        session.user_type = 'nino'      # Tipo de usuario = niño
+        session.nino_activo = True      # El niño está conectado
+        
+        print(f"[SESION] ✅ Información guardada correctamente")
+        return True
+        
+    except Exception as e:
+        print(f"[SESION] ❌ Error guardando información: {e}")
+        print(f"[SESION] ⚠️ Continuando sin guardar la sesión")
+        return False
 
-# ---------------- CLASES ----------------
-urls = (
-    '/', 'Index',
-    '/registrar_tutor', 'RegistrarTutor',
-    '/registrar_chiquillo', 'RegistrarChiquillo',
-    '/inicio_administrador', 'InicioAdministrador',
-    '/saludo_admin', 'SaludoAdmin',
-    '/saludo_chiquillo', 'SaludoChiquillo',
-    '/cerrar_sesion', 'CerrarSesion',
-    '/presentacion_lucas', 'PresentacionLucas',
-    '/presentacion_pagina', 'PresentacionPagina',
-    '/lecciones', 'Lecciones',
-    '/perfil_admin', 'PerfilAdmin',
-    '/perfil_chiquillo', 'PerfilChiquillo',
-    '/editar_perfil', 'EditarPerfil',
-    '/iniciar_sesion', 'IniciarSesion',
-    '/quienes_somos', 'QuienesSomos',
-    '/introduccion', 'Introduccion',
-    '/leccion_coordinacion', 'LeccionCoordinacion',
-    '/leccion_completada', 'LeccionCompletada',
-    '/favicon.ico', 'Favicon',
-    '/debug_ninos', 'DebugNinos',
-    '/static/(.*)', 'StaticFiles',
-)
+def limpiar_nino_session():
+    """
+    Borra la información del niño cuando sale del juego (cerrar sesión)
+    """
+    try:
+        # Verificar si tenemos información guardada
+        if 'session' not in globals() or session is None:
+            return False
+        
+        # Ver si había un niño conectado antes de borrar
+        had = bool(getattr(session, 'nino_activo', False) or getattr(session,'nino_id',None))
+        
+        # Desconectar al niño
+        session.nino_activo = False
+        
+        # Borrar toda la información del niño
+        for attr in ['nino_id','nino_nombre','nino_apellidos']:
+            if hasattr(session, attr):
+                setattr(session, attr, None)  # Poner en None = vacío
+        
+        # Si el tipo de usuario era niño, borrarlo también
+        if getattr(session,'user_type',None)=='nino':
+            session.user_type = None
+            
+        return had  # Devolver si había un niño conectado
+        
+    except Exception as e:
+        print(f'⚠️ [SESION] Error borrando información del niño: {e}')
+        return False
+
+def nino_sesion_activa():
+    """
+    Revisar si hay un niño conectado al juego en este momento
+    """
+    try:
+        # Verificar si tenemos lugar donde guardar información de sesión
+        if 'session' not in globals() or session is None:
+            return False
+        
+        # Ver si hay un niño activo o con información guardada
+        return bool(getattr(session,'nino_activo',False) or getattr(session,'nino_id',None))
+    except Exception as e:
+        print(f"⚠️ Error verificando si hay niño conectado: {e}")
+        return False
+
+def get_session_attr(name, default=None):
+    """
+    Obtener información guardada de la sesión de forma segura
+    """
+    try:
+        # Verificar si tenemos donde guardar información de sesión
+        if 'session' in globals() and session is not None:
+            return getattr(session, name, default)  # Buscar la información
+        else:
+            return default  # Si no hay sesión, devolver valor por defecto
+    except Exception as e:
+        print(f"⚠️ Error obteniendo información de sesión '{name}': {e}")
+        return default
+
+# CONTROLADORES DE PÁGINAS WEB
 class Index:
+    """Esta clase maneja la página principal del juego"""
     def GET(self):
-        # Diagnóstico completo de sesión
-        print(f"[INDEX] === DIAGNÓSTICO DE SESIÓN ===")
-        print(f"[INDEX] session object: {type(session)}")
-        print(f"[INDEX] session_id: {getattr(session, 'session_id', 'N/A')}")
-        try:
-            attrs = {k: getattr(session, k, 'N/A') for k in ['nino_id', 'nino_nombre', 'nino_apellidos', 'user_type', 'nino_activo']}
-            print(f"[INDEX] Atributos sesión: {attrs}")
-        except Exception as e:
-            print(f"[INDEX] Error leyendo sesión: {e}")
-        
+        """Cuando alguien visita la página principal"""
+        # Revisar si hay un niño conectado
         activa = nino_sesion_activa()
-        print(f"[INDEX] nino_sesion_activa() = {activa}")
+        print(f"[INDEX] ¿Hay niño conectado? = {activa}")
         
-        # Leemos plantilla base y si hay sesión de niño insertamos botón salir
+        # Buscar el archivo de la página principal
         html_path = os.path.join(TEMPLATES_DIR, 'index.html')
-        if os.path.exists(html_path):
+        if os.path.exists(html_path):  # Si existe el archivo
             with open(html_path, 'r', encoding='utf-8') as f:
-                contenido = f.read()
+                contenido = f.read()  # Leer todo el contenido del archivo
+                
+            # Si hay un niño conectado, mostrar botón de salir
             if activa:
+                # Código HTML para el botón de salir
                 salir_html = ("<img src=\"/static/images/images_index/salir.png\" "
                               "alt=\"Salir\" style=\"width:70px;height:70px;cursor:pointer;\" "
                               "onclick=\"window.location.href='/cerrar_sesion'\">")
-                contenido = contenido.replace('<!--LOGOUT_MARK-->', salir_html)
-                print(f"[INDEX] ✅ Mostrando botón salir para niño id={getattr(session,'nino_id',None)}")
+                contenido = contenido.replace('<!--LOGOUT_MARK-->', salir_html)  # Poner el botón en su lugar
+                print(f"[INDEX] ✅ Mostrando botón salir para niño id={get_session_attr('nino_id')}")
             else:
+                # Sin niño conectado, no mostrar botón
                 contenido = contenido.replace('<!--LOGOUT_MARK-->', '')
-                print(f"[INDEX] ❌ Sin sesión activa - no mostrar botón salir")
+                print(f"[INDEX] ❌ Sin niño conectado - no mostrar botón salir")
             return contenido
-        return 'Index no encontrado'
+        return 'No se encontró la página principal'  # Error si no hay archivo
 
 class CerrarSesion:
+    """Esta clase maneja cuando un usuario quiere salir del juego"""
     def GET(self):
+        """Cuando alguien hace clic en 'Salir'"""
+        # Ver si había un niño conectado antes de desconectarlo
         activo = nino_sesion_activa()
-        print(f"[LOGOUT-SOFT] Estado previo activo={activo} id={getattr(session,'nino_id',None)} nombre={getattr(session,'nino_nombre',None)}")
+        print(f"[LOGOUT] Estado antes: niño conectado={activo} id={get_session_attr('nino_id')} nombre={get_session_attr('nino_nombre')}")
+        
+        # Desconectar al niño y borrar su información
         had = limpiar_nino_session()
-        print(f"[LOGOUT-SOFT] Resultado -> limpiado={had} ahora activo={nino_sesion_activa()}")
+        print(f"[LOGOUT] Resultado -> se desconectó={had} ahora conectado={nino_sesion_activa()}")
+        
+        # Enviar al usuario de vuelta a la página principal
         raise web.seeother('/')
 
 class RegistrarTutor:
+    """Esta clase maneja el registro de papás, tutores y maestros"""
     def GET(self):
-        return render.registrar_tutor()
+        """Mostrar la página para registrar un tutor"""
+        return render.registrar_tutor()  # Mostrar el formulario HTML
 
     def POST(self):
-        data = web.input()
-        print("Datos del tutor recibidos:", dict(data))
-        # Usar los nombres correctos que vienen del formulario HTML
-        nombres = data.get('nombres','').strip()
-        apellidos = data.get('apellidos','').strip()
-        correo = data.get('correo','').strip().lower()
-        password = data.get('password','').strip()
-        rol = data.get('rol','').strip()
+        """Cuando alguien llena el formulario y lo envía"""
+        data = web.input()  # Recibir la información del formulario
+        print("Información del tutor recibida:", dict(data))
         
-        print(f"Campos procesados -> nombres='{nombres}' apellidos='{apellidos}' correo='{correo}' password='{password}' rol='{rol}'")
+        # Limpiar la información recibida (quitar espacios extra)
+        nombres = data.get('nombres','').strip()        # Nombres sin espacios
+        apellidos = data.get('apellidos','').strip()    # Apellidos sin espacios
+        correo = data.get('correo','').strip().lower()  # Email en minúsculas
+        password = data.get('password','').strip()      # Contraseña
+        rol = data.get('rol','').strip()                # Tipo de usuario (Padre/Tutor/Maestro)
         
+        print(f"Información procesada -> nombres='{nombres}' apellidos='{apellidos}' correo='{correo}' password='{password}' rol='{rol}'")
+        
+        # Revisar que todos los campos estén llenos
         if not all([nombres, apellidos, correo, password, rol]):
             return "Error: Todos los campos son obligatorios."
+        
+        # La contraseña debe tener exactamente 6 caracteres
         if len(password) != 6:
             return "Error: La contraseña debe tener exactamente 6 caracteres."
+        
+        # El email debe tener @ y punto
         if '@' not in correo or '.' not in correo:
             return "Error: Formato de correo inválido."
+        
         try:
-            conn = conectar_db(); cur = conn.cursor()
+            # Conectarse a la base de datos
+            conn = conectar_db()
+            cur = conn.cursor()
+            
+            # Arreglar el tipo de rol según lo que eligió el usuario
             if rol.lower() in ['padre','madre','padre/madre']:
-                rol_normalizado = 'Padre'
+                rol_normalizado = 'Padre'  # Todos los papás se guardan como "Padre"
             elif rol.lower()=='tutor':
                 rol_normalizado='Tutor'
             elif rol.lower()=='maestro':
                 rol_normalizado='Maestro'
             else:
-                rol_normalizado='Padre'
+                rol_normalizado='Padre'  # Si no reconocemos el rol, usar "Padre"
+            
+            # Guardar el nuevo tutor en la base de datos
             cur.execute('''INSERT INTO tutores (rol,nombres,apellidos,correo,password) VALUES (?,?,?,?,?)''',
                         (rol_normalizado,nombres,apellidos,correo,password))
-            tutor_id = cur.lastrowid
-            conn.commit(); conn.close()
+            tutor_id = cur.lastrowid  # Obtener el número único que se le asignó al tutor
+            conn.commit()  # Guardar los cambios
+            conn.close()   # Cerrar conexión con la base de datos
+            
+            # Recordar el número del tutor para el siguiente paso
             session.tutor_id = tutor_id
-            print(f"✅ Tutor registrado: {tutor_id} {nombres} {apellidos} {rol_normalizado}")
+            print(f"✅ Tutor registrado exitosamente: {tutor_id} {nombres} {apellidos} {rol_normalizado}")
+            
+            # Llevar al usuario a la página para registrar niños
             raise web.seeother('/registrar_chiquillo')
+            
         except sqlite3.IntegrityError:
-            try: conn.rollback(); conn.close()
-            except Exception: pass
+            # Error: ya existe un tutor con ese email
+            try: 
+                conn.rollback()  # Cancelar los cambios
+                conn.close()     # Cerrar conexión
+            except Exception: 
+                pass
             return "Error: El correo ya está registrado."
         except web.HTTPError:
+            # Error de redirección (esto es normal, no hacer nada)
             raise
         except Exception as e:
-            try: conn.rollback(); conn.close()
-            except Exception: pass
-            print("❌ Error tutor:", e)
+            # Cualquier otro error
+            try: 
+                conn.rollback()  # Cancelar los cambios
+                conn.close()     # Cerrar conexión
+            except Exception: 
+                pass
+            print("❌ Error registrando tutor:", e)
             return "Error al registrar el tutor."
 
 class RegistrarChiquillo:
+    """Controlador para el registro de niños"""
     def GET(self):
-        return render.registrar_chiquillo()
+        """Mostrar formulario de registro de niño"""
+        return render.registrar_chiquillo()  # Renderizar template
 
     def POST(self):
-        data = web.input()
+        """Procesar formulario de registro de niño"""
+        data = web.input()  # Obtener datos del formulario
         print("Datos recibidos registrar_chiquillo:", dict(data))
-        tutor_id = session.get('tutor_id', None)
+        
+        # Obtener ID del tutor de la sesión o fallback
+        tutor_id = get_session_attr('tutor_id')
         if not tutor_id:
             try:
-                cconn = conectar_db(); ccur = cconn.cursor();
-                ccur.execute('SELECT MAX(id_tutor) FROM tutores'); row = ccur.fetchone(); cconn.close()
+                # Fallback: obtener el último tutor registrado
+                conn = conectar_db()
+                cur = conn.cursor()
+                cur.execute('SELECT MAX(id_tutor) FROM tutores')
+                row = cur.fetchone()
+                conn.close()
                 tutor_id = row[0] if row and row[0] else None
-                if tutor_id: session.tutor_id = tutor_id
+                if tutor_id: 
+                    session.tutor_id = tutor_id
             except Exception as e:
                 print('Error fallback tutor:', e)
                 return 'Error: Registre primero al tutor.'
+                
         if not tutor_id:
             return 'Error: No hay tutor asociado.'
+        
+        # Buscar números en los nombres de los campos para saber cuántos niños hay
         indices = []
-        for k in data.keys():
-            if k.startswith('nombre_'):
+        for k in data.keys():  # Revisar todos los campos que llegaron
+            if k.startswith('nombre_'):  # Si el campo empieza con "nombre_"
                 try:
-                    num = int(k.split('_')[1])
-                    if num not in indices: indices.append(num)
-                except ValueError: pass
-        indices.sort()
+                    num = int(k.split('_')[1])  # Obtener el número después de "nombre_"
+                    if num not in indices: 
+                        indices.append(num)  # Agregar el número a la lista
+                except ValueError: 
+                    pass  # Si no es un número, ignorarlo
+        indices.sort()  # Ordenar los números
+        
         if not indices:
             return 'Error: No se recibieron niños.'
+        
+        # Animales permitidos para la contraseña visual
         permitidos = {'ajolote','borrego','oso','perro'}
         registros = []
+        
         try:
-            conn = conectar_db(); cur = conn.cursor()
+            conn = conectar_db()
+            cur = conn.cursor()
+            
+            # Procesar cada niño
             for idx in indices:
                 nombre = data.get(f'nombre_{idx}','').strip()
                 apellidos = data.get(f'apellidos_{idx}','').strip()
                 genero = data.get(f'tipo_usuario_{idx}','').strip()
                 password_raw = data.get(f'contraseña_{idx}','').strip()
+                
+                # Validaciones
                 if not all([nombre, apellidos, genero, password_raw]):
                     return f'Error: Faltan datos en Niño {idx}.'
                 if genero not in ['Ajolotito','Ajolotita']:
                     return f'Error: Género inválido en Niño {idx}.'
-                animales = [a for a in password_raw.split(',') if a]
-                if len(animales) != 4:
+                
+                # Separar los animales de la contraseña por comas
+                animales = [a for a in password_raw.split(',') if a]  # Dividir por comas y quitar espacios vacíos
+                if len(animales) != 4:  # Debe haber exactamente 4 animales
                     return f'Error: La contraseña del Niño {idx} debe tener exactamente 4 animales.'
-                if any(a not in permitidos for a in animales):
+                if any(a not in permitidos for a in animales):  # Todos los animales deben estar en la lista permitida
                     return f'Error: Niño {idx} tiene animales no permitidos.'
-                password_figuras = ','.join(animales)
+                
+                password_figuras = ','.join(animales)  # Unir los animales con comas otra vez
+                
+                # Insertar niño en la base de datos
                 cur.execute('''INSERT INTO ninos (id_tutor,genero,nombres,apellidos,password_figuras) VALUES (?,?,?,?,?)''',
                             (tutor_id, genero, nombre, apellidos, password_figuras))
                 registros.append((cur.lastrowid, nombre))
-            conn.commit(); conn.close()
+            
+            conn.commit()  # Confirmar todos los cambios
+            conn.close()   # Cerrar conexión
             print('✅ Niños insertados:', registros, 'Tutor', tutor_id)
             
-            # Redireccionar directamente al saludo del chiquillo
+            # Redireccionar al saludo del chiquillo
             raise web.seeother('/saludo_chiquillo')
+            
         except web.HTTPError:
             raise
         except Exception as e:
             print('❌ Error registrando niños:', e)
-            try: conn.rollback(); conn.close()
-            except Exception: pass
+            try: 
+                conn.rollback()
+                conn.close()
+            except Exception: 
+                pass
             return 'Error al registrar los niños.'
 
-class DebugNinos:
+class IniciarSesion:
+    """Controlador para el inicio de sesión de niños"""
     def GET(self):
+        """Mostrar formulario de inicio de sesión"""
+        return render.iniciar_sesion()
+
+    def POST(self):
+        """Procesar autenticación de niño"""
+        data = web.input()  # Obtener datos del formulario
+        
+        # Extraer campos del formulario
+        nombre = data.get('nombre','').strip()
+        apellidos = data.get('primer_apellido-y-segundo-apellido','').strip()
+        password_animales = (data.get('password_animales','') or data.get('contraseña','')).strip()
+        
+        print(f"[LOGIN] Datos recibidos -> nombre='{nombre}' apellidos='{apellidos}' password='{password_animales}'")
+        
+        # Validación de campos
+        if not (nombre and apellidos and password_animales):
+            raise web.seeother('/iniciar_sesion?error=campos')
+        
+        # Validar formato de contraseña (debe ser 4 animales separados por comas)
+        animales = [a for a in password_animales.split(',') if a]  # Separar por comas
+        permitidos = {'ajolote','borrego','oso','perro'}  # Animales que se pueden usar
+        
+        if len(animales) != 4:  # Debe ser exactamente 4 animales
+            raise web.seeother('/iniciar_sesion?error=pass')
+        if any(a not in permitidos for a in animales):  # Todos deben estar en la lista permitida
+            raise web.seeother('/iniciar_sesion?error=animales')
+        
         try:
+            # Buscar niño en la base de datos
             conn = conectar_db()
             cur = conn.cursor()
-            cur.execute('''SELECT n.id_nino, n.nombres, n.apellidos, n.genero, n.password_figuras, n.id_tutor,
-                                  t.nombres, t.apellidos, t.rol
-                           FROM ninos n LEFT JOIN tutores t ON n.id_tutor = t.id_tutor
-                           ORDER BY n.id_nino DESC''')
-            rows = cur.fetchall()
+            cur.execute('''SELECT id_nino, nombres, apellidos, id_tutor, password_figuras FROM ninos
+                           WHERE lower(nombres)=? AND lower(apellidos)=? AND password_figuras=? LIMIT 1''',
+                        (nombre.lower(), apellidos.lower(), password_animales))
+            row = cur.fetchone()
             conn.close()
-            html = ["<h2>Niños registrados</h2>", f"<p>Total: {len(rows)}</p>", '<table border=1 cellpadding=5>']
-            html.append('<tr><th>ID</th><th>Nombres</th><th>Apellidos</th><th>Género</th><th>Password</th><th>Tutor ID</th><th>Tutor</th><th>Rol</th></tr>')
-            for r in rows:
-                html.append(f"<tr><td>{r[0]}</td><td>{r[1]}</td><td>{r[2]}</td><td>{r[3]}</td><td>{r[4]}</td><td>{r[5]}</td><td>{r[6]} {r[7]}</td><td>{r[8]}</td></tr>")
-            html.append('</table>')
-            return '\n'.join(html)
+            
+            print(f"[LOGIN] Resultado query -> {row}")
+            
+            if not row:
+                raise web.seeother('/iniciar_sesion?error=credenciales')
+            
+            # Establecer sesión del niño
+            set_nino_session(row)
+            print(f"✅ [LOGIN OK] Niño autenticado id={row[0]} nombre='{row[1]}' sesion_activa={nino_sesion_activa()}")
+            
+            # Redirigir al saludo
+            raise web.seeother('/saludo_chiquillo')
+            
+        except web.HTTPError:
+            raise
         except Exception as e:
-            return f"Error debug: {e}"
+            print('Error autenticando niño:', e)
+            raise web.seeother('/iniciar_sesion?error=sistema')
 
-class SaludoAdmin:
+class InicioAdministrador:
+    """Controlador para el inicio de sesión de administradores"""
     def GET(self):
-        return render.saludo_admin()
+        """Mostrar formulario de login de administrador"""
+        return render.inicio_administrador()
+    
+    def POST(self):
+        """Procesar autenticación de administrador"""
+        data = web.input()
+        correo = data.get('correo', '').strip().lower()
+        password = data.get('contraseña', '').strip()
+
+        print(f"[ADMIN-LOGIN] Intento de login -> correo='{correo}' password='{password}'")
+
+        # Validaciones básicas
+        if not correo or not password:
+            print(f"[ADMIN-LOGIN] ❌ Campos vacíos")
+            with open(os.path.join(TEMPLATES_DIR, 'inicio_administrador.html'), 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            return html_content + "<script>alert('Error: Por favor ingresa tu correo y contraseña.');</script>"
+
+        if '@' not in correo or '.' not in correo:
+            print(f"[ADMIN-LOGIN] ❌ Formato de correo inválido")
+            with open(os.path.join(TEMPLATES_DIR, 'inicio_administrador.html'), 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            return html_content + "<script>alert('Error: Formato de correo inválido.');</script>"
+
+        try:
+            # Buscar tutor en la base de datos
+            conn = conectar_db()
+            cur = conn.cursor()
+            
+            cur.execute('''SELECT id_tutor, nombres, apellidos, rol, correo, password 
+                           FROM tutores 
+                           WHERE lower(correo) = ? AND password = ? 
+                           LIMIT 1''', (correo, password))
+            
+            tutor = cur.fetchone()
+            conn.close()
+            
+            if tutor:
+                # Usuario encontrado - crear sesión
+                tutor_id, nombres, apellidos, rol, correo_db, password_db = tutor
+                
+                # Establecer sesión de administrador
+                session.logged_in = True
+                session.tutor_id = tutor_id
+                session.user_type = 'admin'
+                session.tutor_nombres = nombres
+                session.tutor_apellidos = apellidos
+                session.tutor_rol = rol
+                session.tutor_correo = correo_db
+                
+                print(f"✅ [ADMIN-LOGIN] Login exitoso - Tutor: {nombres} {apellidos} (ID: {tutor_id})")
+                
+                # Redirigir al perfil de administrador
+                token = password[:3] + correo[:3]  # Token simple para backup
+                raise web.seeother(f'/perfil_admin?tutor_id={tutor_id}&token={token}')
+            else:
+                # Credenciales incorrectas
+                print(f"❌ [ADMIN-LOGIN] Credenciales incorrectas para: {correo}")
+                with open(os.path.join(TEMPLATES_DIR, 'inicio_administrador.html'), 'r', encoding='utf-8') as f:
+                    html_content = f.read()
+                return html_content + "<script>alert('Error: Correo o contraseña incorrectos.');</script>"
+                
+        except web.HTTPError:
+            raise
+        except Exception as e:
+            print(f"❌ [ADMIN-LOGIN] Error en autenticación: {e}")
+            with open(os.path.join(TEMPLATES_DIR, 'inicio_administrador.html'), 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            return html_content + "<script>alert('Error del sistema. Intenta de nuevo.');</script>"
 
 class PerfilAdmin:
+    """Controlador para el perfil de administrador"""
     def GET(self):
+        """Mostrar perfil de administrador"""
         # Obtener parámetros de la URL (fallback si las sesiones no funcionan)
         input_data = web.input()
         url_tutor_id = input_data.get('tutor_id', None)
         url_token = input_data.get('token', None)
         
         # Verificar si hay sesión de administrador activa
-        logged_in = getattr(session, 'logged_in', False)
-        session_tutor_id = getattr(session, 'tutor_id', None)
+        logged_in = get_session_attr('logged_in', False)
+        session_tutor_id = get_session_attr('tutor_id', None)
         
         print(f"🔍 PerfilAdmin GET - logged_in: {logged_in}, session_tutor_id: {session_tutor_id}")
         print(f"🔍 URL params - tutor_id: {url_tutor_id}, token: {url_token}")
@@ -518,12 +548,9 @@ class PerfilAdmin:
         # Si viene de URL, validar el token
         if url_tutor_id and url_token:
             try:
-                # Validar que el tutor existe y el token coincide
                 conn = conectar_db()
                 cur = conn.cursor()
-                cur.execute('''SELECT correo, password 
-                               FROM tutores 
-                               WHERE id_tutor = ?''', (url_tutor_id,))
+                cur.execute('''SELECT correo, password FROM tutores WHERE id_tutor = ?''', (url_tutor_id,))
                 tutor_check = cur.fetchone()
                 conn.close()
                 
@@ -533,15 +560,14 @@ class PerfilAdmin:
                     if url_token == expected_token:
                         print(f"✅ Token válido para tutor {url_tutor_id}")
                         tutor_id = url_tutor_id
-                        # Establecer sesión ahora que sabemos que es válido
+                        # Establecer sesión
                         try:
                             session.logged_in = True
-                            session.tutor_id = int(url_tutor_id)  # Asegurar que sea entero
+                            session.tutor_id = int(url_tutor_id)
                             session.user_type = 'admin'
                             print(f"💾 Sesión establecida desde URL params")
                         except Exception as session_error:
                             print(f"⚠️ Error estableciendo sesión: {session_error}")
-                            # Continuar con tutor_id como string si hay problemas
                     else:
                         print(f"❌ Token inválido para tutor {url_tutor_id}")
                         raise web.seeother('/inicio_administrador')
@@ -557,7 +583,6 @@ class PerfilAdmin:
             conn = conectar_db()
             cur = conn.cursor()
             
-            # Asegurar que tutor_id sea entero para la consulta
             tutor_id_int = int(tutor_id)
             
             cur.execute('''SELECT nombres, apellidos, correo, rol 
@@ -605,155 +630,10 @@ class PerfilAdmin:
             print(f"❌ Error cargando perfil admin: {e}")
             raise web.seeother('/inicio_administrador')
 
-class PerfilChiquillo:
+# Controladores simples para páginas estáticas
+class SaludoAdmin:
     def GET(self):
-        return render.perfil_chiquillo()
-
-class IniciarSesion:
-    def GET(self):
-        return render.iniciar_sesion()
-
-    def POST(self):
-        data = web.input()
-        nombre = data.get('nombre','').strip()
-        apellidos = data.get('primer_apellido-y-segundo-apellido','').strip()
-        password_animales = (data.get('password_animales','') or data.get('contraseña','')).strip()
-        print(f"[LOGIN] Datos recibidos -> nombre='{nombre}' apellidos='{apellidos}' password='{password_animales}'")
-        if not (nombre and apellidos and password_animales):
-            raise web.seeother('/iniciar_sesion?error=campos')
-        animales = [a for a in password_animales.split(',') if a]
-        permitidos = {'ajolote','borrego','oso','perro'}
-        if len(animales) != 4:
-            raise web.seeother('/iniciar_sesion?error=pass')
-        if any(a not in permitidos for a in animales):
-            raise web.seeother('/iniciar_sesion?error=animales')
-        try:
-            conn = conectar_db(); cur = conn.cursor()
-            cur.execute('''SELECT id_nino, nombres, apellidos, id_tutor, password_figuras FROM ninos
-                           WHERE lower(nombres)=? AND lower(apellidos)=? AND password_figuras=? LIMIT 1''',
-                        (nombre.lower(), apellidos.lower(), password_animales))
-            row = cur.fetchone(); conn.close()
-            print(f"[LOGIN] Resultado query -> {row}")
-            if not row:
-                raise web.seeother('/iniciar_sesion?error=credenciales')
-            set_nino_session(row)
-            print(f"✅ [LOGIN OK] Niño autenticado id={row[0]} nombre='{row[1]}' sesion_activa={nino_sesion_activa()}")
-            
-            # Diagnóstico post-login
-            print(f"[LOGIN] === POST-LOGIN DIAGNÓSTICO ===")
-            try:
-                attrs = {k: getattr(session, k, 'N/A') for k in ['nino_id', 'nino_nombre', 'nino_apellidos', 'user_type', 'nino_activo']}
-                print(f"[LOGIN] Atributos después de set_nino_session: {attrs}")
-            except Exception as e:
-                print(f"[LOGIN] Error leyendo sesión post-login: {e}")
-            
-            raise web.seeother('/saludo_chiquillo')
-        except web.HTTPError:
-            raise
-        except Exception as e:
-            print('Error autenticando niño:', e)
-            raise web.seeother('/iniciar_sesion?error=sistema')
-
-class QuienesSomos:
-    def GET(self):
-        return render.quienes_somos()
-
-class InicioAdministrador:
-    def GET(self):
-        return render.inicio_administrador()
-    
-    def POST(self):
-        data = web.input()
-        correo = data.get('correo', '').strip().lower()
-        password = data.get('contraseña', '').strip()
-
-        print(f"[ADMIN-LOGIN] Intento de login -> correo='{correo}' password='{password}'")
-
-        # Validar que los campos no estén vacíos
-        if not correo or not password:
-            print(f"[ADMIN-LOGIN] ❌ Campos vacíos")
-            with open(os.path.join(TEMPLATES_DIR, 'inicio_administrador.html'), 'r', encoding='utf-8') as f:
-                html_content = f.read()
-            return html_content + "<script>alert('Error: Por favor ingresa tu correo y contraseña.');</script>"
-
-        # Validar formato básico de correo
-        if '@' not in correo or '.' not in correo:
-            print(f"[ADMIN-LOGIN] ❌ Formato de correo inválido")
-            with open(os.path.join(TEMPLATES_DIR, 'inicio_administrador.html'), 'r', encoding='utf-8') as f:
-                html_content = f.read()
-            return html_content + "<script>alert('Error: Formato de correo inválido.');</script>"
-
-        try:
-            # Conectar a la base de datos y buscar el tutor
-            conn = conectar_db()
-            cur = conn.cursor()
-            
-            cur.execute('''SELECT id_tutor, nombres, apellidos, rol, correo, password 
-                           FROM tutores 
-                           WHERE lower(correo) = ? AND password = ? 
-                           LIMIT 1''', (correo, password))
-            
-            tutor = cur.fetchone()
-            conn.close()
-            
-            if tutor:
-                # Usuario encontrado - crear sesión
-                tutor_id, nombres, apellidos, rol, correo_db, password_db = tutor
-                
-                # Establecer sesión de administrador
-                session.logged_in = True
-                session.tutor_id = tutor_id
-                session.user_type = 'admin'
-                session.tutor_nombres = nombres
-                session.tutor_apellidos = apellidos
-                session.tutor_rol = rol
-                session.tutor_correo = correo_db
-                
-                # Forzar guardado de sesión
-                try:
-                    # Intentar múltiples métodos para asegurar que la sesión se guarde
-                    if hasattr(session, '_save'):
-                        session._save()
-                        print(f"💾 [ADMIN-LOGIN] Sesión guardada con _save()")
-                    elif hasattr(session, 'save'):
-                        session.save()
-                        print(f"💾 [ADMIN-LOGIN] Sesión guardada con save()")
-                    else:
-                        # Forzar guardado asignando nuevamente un atributo
-                        session.admin_login_time = 'logged_in'
-                        print(f"💾 [ADMIN-LOGIN] Sesión forzada con timestamp")
-                except Exception as save_error:
-                    print(f"⚠️ [ADMIN-LOGIN] Error guardando sesión: {save_error}")
-                    # Continuar aunque haya error en el guardado
-                
-                print(f"✅ [ADMIN-LOGIN] Login exitoso - Tutor: {nombres} {apellidos} (ID: {tutor_id}, Rol: {rol})")
-                print(f"🔒 Sesión creada: logged_in=True, tutor_id={tutor_id}")
-                
-                # Verificación inmediata de sesión
-                verificacion = getattr(session, 'logged_in', False)
-                print(f"🔍 Verificación inmediata: {verificacion}")
-                
-                # Siempre usar redirección con token como backup
-                # (las sesiones web.py a veces no persisten entre requests)
-                print(f"🔄 [ADMIN-LOGIN] Usando redirección con token por seguridad")
-                token = password[:3] + correo[:3]  # Token simple basado en credenciales
-                raise web.seeother(f'/perfil_admin?tutor_id={tutor_id}&token={token}')
-            else:
-                # Usuario no encontrado o credenciales incorrectas
-                print(f"❌ [ADMIN-LOGIN] Credenciales incorrectas para: {correo}")
-                # Leer el HTML del template y agregar el script de alerta
-                with open(os.path.join(TEMPLATES_DIR, 'inicio_administrador.html'), 'r', encoding='utf-8') as f:
-                    html_content = f.read()
-                return html_content + "<script>alert('Error: Correo o contraseña incorrectos.');</script>"
-                
-        except web.HTTPError:
-            raise
-        except Exception as e:
-            print(f"❌ [ADMIN-LOGIN] Error en autenticación: {e}")
-            # Leer el HTML del template y agregar el script de alerta
-            with open(os.path.join(TEMPLATES_DIR, 'inicio_administrador.html'), 'r', encoding='utf-8') as f:
-                html_content = f.read()
-            return html_content + "<script>alert('Error del sistema. Intenta de nuevo.');</script>"
+        return render.saludo_admin()
 
 class SaludoChiquillo:
     def GET(self):
@@ -771,246 +651,9 @@ class Lecciones:
     def GET(self):
         return render.lecciones()
 
-class EditarPerfil:
+class QuienesSomos:
     def GET(self):
-        # Verificar que hay sesión de administrador activa
-        logged_in = getattr(session, 'logged_in', False)
-        tutor_id = getattr(session, 'tutor_id', None)
-        
-        # También revisar parámetros URL como fallback
-        input_data = web.input()
-        url_tutor_id = input_data.get('tutor_id', None)
-        url_token = input_data.get('token', None)
-        
-        if not tutor_id and url_tutor_id and url_token:
-            # Validar token si viene de URL
-            try:
-                conn = conectar_db()
-                cur = conn.cursor()
-                cur.execute('''SELECT correo, password FROM tutores WHERE id_tutor = ?''', (url_tutor_id,))
-                tutor_check = cur.fetchone()
-                conn.close()
-                
-                if tutor_check:
-                    correo, password = tutor_check
-                    expected_token = password[:3] + correo[:3]
-                    if url_token == expected_token:
-                        tutor_id = url_tutor_id
-                        # Establecer sesión
-                        session.logged_in = True
-                        session.tutor_id = int(url_tutor_id)
-                        session.user_type = 'admin'
-            except Exception as e:
-                print(f"Error validando token en editar_perfil: {e}")
-        
-        if not tutor_id:
-            print(f"❌ Acceso denegado a editar_perfil - redirigiendo a inicio_administrador")
-            raise web.seeother('/inicio_administrador')
-        
-        try:
-            # Obtener datos actuales del tutor
-            conn = conectar_db()
-            cur = conn.cursor()
-            cur.execute('''SELECT nombres, apellidos, correo, rol, password 
-                           FROM tutores 
-                           WHERE id_tutor = ?''', (int(tutor_id),))
-            tutor_data = cur.fetchone()
-            conn.close()
-            
-            if not tutor_data:
-                raise web.seeother('/inicio_administrador')
-            
-            # Preparar datos para la plantilla
-            tutor_info = {
-                'nombres': tutor_data[0],
-                'apellidos': tutor_data[1],
-                'correo': tutor_data[2],
-                'rol': tutor_data[3],
-                'password': tutor_data[4]
-            }
-            
-            return render.editar_perfil_nuevo(tutor_info)
-            
-        except Exception as e:
-            print(f"❌ Error obteniendo datos del tutor para editar: {e}")
-            raise web.seeother('/perfil_admin')
-    
-    def POST(self):
-        print(f"[EDITAR_PERFIL] POST iniciado")
-        
-        # Verificar sesión de administrador
-        logged_in = getattr(session, 'logged_in', False)
-        tutor_id = getattr(session, 'tutor_id', None)
-        
-        print(f"[EDITAR_PERFIL] Estado sesión: logged_in={logged_in}, tutor_id={tutor_id}")
-        
-        # También revisar parámetros URL como fallback (igual que en GET)
-        input_data = web.input()
-        url_tutor_id = input_data.get('tutor_id', None)
-        url_token = input_data.get('token', None)
-        
-        if not tutor_id and url_tutor_id and url_token:
-            print(f"[EDITAR_PERFIL] Intentando validar token desde URL")
-            # Validar token si viene de URL
-            try:
-                conn = conectar_db()
-                cur = conn.cursor()
-                cur.execute('''SELECT correo, password FROM tutores WHERE id_tutor = ?''', (url_tutor_id,))
-                tutor_check = cur.fetchone()
-                conn.close()
-                
-                if tutor_check:
-                    correo, password = tutor_check
-                    expected_token = password[:3] + correo[:3]
-                    if url_token == expected_token:
-                        tutor_id = url_tutor_id
-                        # Establecer sesión
-                        session.logged_in = True
-                        session.tutor_id = int(url_tutor_id)
-                        session.user_type = 'admin'
-                        print(f"✅ [EDITAR_PERFIL] Token válido, sesión establecida para tutor {tutor_id}")
-            except Exception as e:
-                print(f"❌ [EDITAR_PERFIL] Error validando token: {e}")
-        
-        if not tutor_id:
-            print(f"[EDITAR_PERFIL] ❌ Sin sesión válida - redirigiendo a login")
-            raise web.seeother('/inicio_administrador')
-        
-        data = web.input()
-        nombres = data.get('nombres', '').strip()
-        apellidos = data.get('apellidos', '').strip()
-        correo = data.get('correo', '').strip().lower()
-        rol = data.get('rol', '').strip()
-        password = data.get('password', '').strip()
-        verificar_password = data.get('verificar_password', '').strip()
-        
-        print(f"[EDITAR_PERFIL] Datos recibidos - nombres: {nombres}, apellidos: {apellidos}, correo: {correo}, rol: {rol}, password: {password}")
-        
-        # Validaciones
-        if not all([nombres, apellidos, correo, rol, password]):
-            # Recargar página con error
-            try:
-                conn = conectar_db()
-                cur = conn.cursor()
-                cur.execute('''SELECT nombres, apellidos, correo, rol, password FROM tutores WHERE id_tutor = ?''', (int(tutor_id),))
-                tutor_data = cur.fetchone()
-                conn.close()
-                tutor_info = {
-                    'nombres': tutor_data[0], 'apellidos': tutor_data[1], 'correo': tutor_data[2], 
-                    'rol': tutor_data[3], 'password': tutor_data[4]
-                }
-                return render.editar_perfil_nuevo(tutor_info) + "<script>alert('Error: Todos los campos son obligatorios.');</script>"
-            except Exception:
-                raise web.seeother('/perfil_admin')
-        
-        if len(password) != 6:
-            try:
-                conn = conectar_db()
-                cur = conn.cursor()
-                cur.execute('''SELECT nombres, apellidos, correo, rol, password FROM tutores WHERE id_tutor = ?''', (int(tutor_id),))
-                tutor_data = cur.fetchone()
-                conn.close()
-                tutor_info = {
-                    'nombres': tutor_data[0], 'apellidos': tutor_data[1], 'correo': tutor_data[2], 
-                    'rol': tutor_data[3], 'password': tutor_data[4]
-                }
-                return render.editar_perfil_nuevo(tutor_info) + "<script>alert('Error: La contraseña debe tener exactamente 6 caracteres.');</script>"
-            except Exception:
-                raise web.seeother('/perfil_admin')
-        
-        if password != verificar_password:
-            try:
-                conn = conectar_db()
-                cur = conn.cursor()
-                cur.execute('''SELECT nombres, apellidos, correo, rol, password FROM tutores WHERE id_tutor = ?''', (int(tutor_id),))
-                tutor_data = cur.fetchone()
-                conn.close()
-                tutor_info = {
-                    'nombres': tutor_data[0], 'apellidos': tutor_data[1], 'correo': tutor_data[2], 
-                    'rol': tutor_data[3], 'password': tutor_data[4]
-                }
-                return render.editar_perfil_nuevo(tutor_info) + "<script>alert('Error: Las contraseñas no coinciden.');</script>"
-            except Exception:
-                raise web.seeother('/perfil_admin')
-        
-        if '@' not in correo or '.' not in correo:
-            try:
-                conn = conectar_db()
-                cur = conn.cursor()
-                cur.execute('''SELECT nombres, apellidos, correo, rol, password FROM tutores WHERE id_tutor = ?''', (int(tutor_id),))
-                tutor_data = cur.fetchone()
-                conn.close()
-                tutor_info = {
-                    'nombres': tutor_data[0], 'apellidos': tutor_data[1], 'correo': tutor_data[2], 
-                    'rol': tutor_data[3], 'password': tutor_data[4]
-                }
-                return render.editar_perfil_nuevo(tutor_info) + "<script>alert('Error: Formato de correo inválido.');</script>"
-            except Exception:
-                raise web.seeother('/perfil_admin')
-        
-        # Normalizar rol
-        if rol.lower() in ['padre','madre','padre/madre']:
-            rol_normalizado = 'Padre'
-        elif rol.lower() == 'tutor':
-            rol_normalizado = 'Tutor'
-        elif rol.lower() == 'maestro':
-            rol_normalizado = 'Maestro'
-        else:
-            rol_normalizado = 'Padre'
-        
-        try:
-            # Actualizar datos en la base de datos
-            conn = conectar_db()
-            cur = conn.cursor()
-            
-            # Verificar si el correo ya existe en otro tutor
-            cur.execute('''SELECT id_tutor FROM tutores WHERE correo = ? AND id_tutor != ?''', (correo, int(tutor_id)))
-            existing_tutor = cur.fetchone()
-            
-            if existing_tutor:
-                conn.close()
-                # Recargar con datos actuales y mostrar error
-                conn = conectar_db()
-                cur = conn.cursor()
-                cur.execute('''SELECT nombres, apellidos, correo, rol, password FROM tutores WHERE id_tutor = ?''', (int(tutor_id),))
-                tutor_data = cur.fetchone()
-                conn.close()
-                tutor_info = {
-                    'nombres': tutor_data[0], 'apellidos': tutor_data[1], 'correo': tutor_data[2], 
-                    'rol': tutor_data[3], 'password': tutor_data[4]
-                }
-                return render.editar_perfil_nuevo(tutor_info) + "<script>alert('Error: El correo ya está registrado por otro usuario.');</script>"
-            
-            # Actualizar el tutor
-            cur.execute('''UPDATE tutores 
-                          SET nombres = ?, apellidos = ?, correo = ?, rol = ?, password = ?
-                          WHERE id_tutor = ?''', 
-                          (nombres, apellidos, correo, rol_normalizado, password, int(tutor_id)))
-            
-            conn.commit()
-            conn.close()
-            
-            # Actualizar datos de sesión
-            session.tutor_nombres = nombres
-            session.tutor_apellidos = apellidos
-            session.tutor_correo = correo
-            session.tutor_rol = rol_normalizado
-            
-            print(f"✅ Perfil actualizado exitosamente para tutor {tutor_id}: {nombres} {apellidos}")
-            
-            # Redirigir de vuelta al perfil con mensaje de éxito
-            raise web.seeother('/perfil_admin?updated=1')
-            
-        except web.HTTPError:
-            raise
-        except Exception as e:
-            print(f"❌ Error actualizando perfil: {e}")
-            try:
-                conn.rollback()
-                conn.close()
-            except Exception:
-                pass
-            raise web.seeother('/perfil_admin')
+        return render.quienes_somos()
 
 class Introduccion:
     def GET(self):
@@ -1035,26 +678,61 @@ class Favicon:
         return b''
 
 class StaticFiles:
+    """Controlador para servir archivos estáticos (imágenes, CSS, JS, audio)"""
     def GET(self, path):
-        file_path = os.path.join(STATIC_DIR, path)
-        if os.path.exists(file_path):
-            ext = os.path.splitext(path)[1].lower()
+        """Servir archivo estático basado en la ruta solicitada"""
+        file_path = os.path.join(STATIC_DIR, path)  # Construir ruta completa del archivo
+        
+        # Verificar si el archivo existe y es un archivo (no directorio)
+        if os.path.exists(file_path) and os.path.isfile(file_path):
+            ext = os.path.splitext(path)[1].lower()  # Obtener extensión del archivo
+            
+            # Diccionario de tipos MIME para diferentes extensiones
             mime_types = {
-                '.css': 'text/css',
-                '.js': 'application/javascript',
-                '.png': 'image/png',
-                '.jpg': 'image/jpeg',
-                '.jpeg': 'image/jpeg',
-                '.gif': 'image/gif',
-                '.mp3': 'audio/mpeg'
+                '.css': 'text/css',                    # Hojas de estilo CSS
+                '.js': 'application/javascript',       # Archivos JavaScript
+                '.png': 'image/png',                   # Imágenes PNG
+                '.jpg': 'image/jpeg',                  # Imágenes JPEG
+                '.jpeg': 'image/jpeg',                 # Imágenes JPEG (extensión completa)
+                '.gif': 'image/gif',                   # Imágenes GIF
+                '.mp3': 'audio/mpeg',                  # Archivos de audio MP3
+                '.wav': 'audio/wav'                    # Archivos de audio WAV
             }
+            
+            # Establecer el tipo de contenido correcto en la cabecera HTTP
             web.header('Content-Type', mime_types.get(ext, 'application/octet-stream'))
+            
+            # Abrir y leer el archivo en modo binario
             with open(file_path, 'rb') as f:
-                return f.read()
+                return f.read()  # Retornar contenido del archivo
         else:
+            # Si el archivo no existe, retornar error 404
             raise web.notfound()
 
-# ---------------- APP ----------------
+# CONFIGURACIÓN DE URLS Y APLICACIÓN
+# Mapeo de rutas URL a clases controladoras
+urls = (
+    '/', 'Index',                                    # Página principal
+    '/registrar_tutor', 'RegistrarTutor',           # Registro de tutores/padres
+    '/registrar_chiquillo', 'RegistrarChiquillo',   # Registro de niños
+    '/inicio_administrador', 'InicioAdministrador', # Login de administradores
+    '/saludo_admin', 'SaludoAdmin',                 # Saludo para administradores
+    '/saludo_chiquillo', 'SaludoChiquillo',         # Saludo para niños
+    '/cerrar_sesion', 'CerrarSesion',               # Cerrar sesión
+    '/presentacion_lucas', 'PresentacionLucas',     # Presentación del personaje Lucas
+    '/presentacion_pagina', 'PresentacionPagina',   # Presentación de la página
+    '/lecciones', 'Lecciones',                      # Página de lecciones
+    '/perfil_admin', 'PerfilAdmin',                 # Perfil del administrador
+    '/iniciar_sesion', 'IniciarSesion',             # Login de niños
+    '/quienes_somos', 'QuienesSomos',               # Página "Quiénes Somos"
+    '/introduccion', 'Introduccion',                # Lección de introducción
+    '/leccion_coordinacion', 'LeccionCoordinacion', # Lección de coordinación
+    '/leccion_completada', 'LeccionCompletada',     # Página de lección completada
+    '/favicon.ico', 'Favicon',                      # Icono del sitio
+    '/static/(.*)', 'StaticFiles',                  # Archivos estáticos
+)
+
+# Crear instancia de la aplicación web
 app = web.application(urls, globals())
 
 # Configuración de sesiones (usar ruta absoluta y manejo robusto)
@@ -1092,41 +770,34 @@ except PermissionError as e:
     session = Session(app, DummyStore(), initializer=session_initializer)
     print(f"[SESION] ⚠️ Usando DummyStore (memoria) - sesiones no persistentes")
 
-# Helper seguro para obtener atributos de sesión sin romper la app
-def get_session_attr(name, default=None):
-    try:
-        return getattr(session, name, default)
-    except Exception as e:
-        print(f" Error leyendo atributo de sesión '{name}': {e}")
-        return default
+# PUNTO DE ENTRADA PRINCIPAL
 
+# Crear función WSGI para deployment
 application = app.wsgifunc()
 
-'''
 if __name__ == "__main__":
     try:
-        from waitress import serve
+        # Inicializar la base de datos al arrancar el servidor
+        print("🔄 Inicializando base de datos...")
+        init_db()
+        print("✅ Base de datos inicializada correctamente")
         
-        # Inicializar la base de datos
-        try:
-            init_db()
-            print("Base de datos inicializada correctamente")
-        except Exception as e:
-            print(f"Error al inicializar BD: {e}")
+        # Configurar puerto del servidor
+        PORT = 80
+        HOST = '127.0.0.1'
         
-        print(" Servidor corriendo en http://localhost:8080")
-        # Configuración optimizada para reducir warnings
-        serve(application, 
-              listen="*:8080",
-              threads=6,        # Más threads para manejar solicitudes
-              channel_timeout=120,
-              cleanup_interval=30,
-              log_socket_errors=False)  # Reducir logs de errores menores
-    except ImportError:
-        print("Waitress no instalado, usando servidor simple.")
-        app.run()
-'''
-if __name__ == "__main__":
-    import sys
-    sys.argv = ['app.py', '127.0.0.1:8081']
-    app.run()
+        print(f"✅ Servidor iniciando en http://{HOST}:{PORT}")
+        print("💡 Presiona Ctrl+C para detener el servidor")
+        
+        # Iniciar el servidor web
+        import sys
+        sys.argv = ['app.py', f'{HOST}:{PORT}']  # Configurar argumentos
+        app.run()  # Iniciar el servidor
+        
+    except KeyboardInterrupt:
+        print("\n🛑 Servidor detenido por el usuario")  # Cuando presionan Ctrl+C
+    except Exception as e:
+        print(f"❌ Error al iniciar servidor: {e}")
+        print("💡 Verifica que el puerto 8081 no esté en uso")
+        import traceback
+        traceback.print_exc()  # Mostrar detalles completos del error
